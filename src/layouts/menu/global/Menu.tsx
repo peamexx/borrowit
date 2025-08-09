@@ -2,41 +2,27 @@
 import styles from './menu.module.css';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-
 import { Tree } from 'primereact/tree';
-
-const MENU = [{
-  key: 'manage:book',
-  label: '도서 관리',
-  icon: 'pi pi-fw pi-inbox',
-  children: [
-    {
-      key: 'book:list',
-      label: '도서 목록',
-      icon: 'pi pi-fw pi-cog'
-    },
-    {
-      key: 'book:borrow',
-      label: '대출 관리',
-      icon: 'pi pi-fw pi-home'
-    },
-    {
-      key: 'book:overdue',
-      label: '연체 관리',
-      icon: 'pi pi-fw pi-home'
-    }
-  ]
-}];
+import menuJson from '@data/menu/global/menu.json';
 
 function Menu() {
   const navigate = useNavigate();
-
+  const [menu, setMenu]: any = useState({});
   const [expandedKeys, setExpandedKeys]: any = useState({});
 
-  useEffect(() => { console.debug(expandedKeys); }, [expandedKeys])
+  useEffect(() => {
+    fetchMenu();
+  }, [])
+
+  const fetchMenu = async () => {
+    if (menuJson && menuJson.menu) {
+      setMenu(menuJson.menu)
+    }
+  }
 
   const handleClick = (e: any) => {
     if (e.node.key == 'manage:book') {
+      // todo나중에 공통으로 만들기
       if (expandedKeys['manage:book']) {
         let _expandedKeys = { ...expandedKeys };
         delete _expandedKeys['manage:book'];
@@ -55,7 +41,7 @@ function Menu() {
 
   return (
     <div className={styles.menu}>
-      <Tree value={MENU} className={styles.treeWrap} expandedKeys={expandedKeys} onToggle={(e) => setExpandedKeys(e.value)} onNodeClick={handleClick} />
+      <Tree value={menu} className={styles.treeWrap} expandedKeys={expandedKeys} onToggle={(e) => setExpandedKeys(e.value)} onNodeClick={handleClick} />
     </div>
   )
 }
