@@ -11,3 +11,10 @@ body {
   background-color: var(--surface-100);
   overflow: hidden;
 }
+
+#container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: calc(100% - 60px);
+}

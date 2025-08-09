@@ -25,9 +25,42 @@ export default defineConfig(({ mode }) => {
           }
         }
       },
+      {
+        name: 'client-menu-resolver',
+        resolveId(id) {
+          if (id === 'virtual:client-menu') {
+            const clientPath = path.resolve(__dirname, `src/layouts/menu/clients/${CLIENT}/Menu.tsx`);
+            const globalPath = path.resolve(__dirname, 'src/layouts/menu/global/Menu.tsx');
+
+            if (fs.existsSync(clientPath)) {
+              return clientPath;
+            } else {
+              return globalPath;
+            }
+          }
+        }
+      },
+      {
+        name: 'client-book-resolver',
+        resolveId(id) {
+          if (id === 'virtual:client-bookList') {
+            const clientPath = path.resolve(__dirname, `src/layouts/books/book-list/clients/${CLIENT}/BookList.tsx`);
+            const globalPath = path.resolve(__dirname, 'src/layouts/books/book-list/global/BookList.tsx');
+
+            if (fs.existsSync(clientPath)) {
+              return clientPath;
+            } else {
+              return globalPath;
+            }
+          }
+        }
+      },
     ],
     define: {
       __CLIENT__: JSON.stringify(ENV.VITE_CLIENT)
+    },
+    resolve: {
+      alias: [{ find: "@plugins", replacement: path.resolve(__dirname, "./src/plugins") }],
     },
   }
 })
