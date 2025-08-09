@@ -65,5 +65,14 @@ export default defineConfig(({ mode }) => {
         { find: "@data", replacement: path.resolve(__dirname, "./src/data") }
       ],
     },
+    server: {
+      proxy: {
+        '/aladin': {
+          target: ENV.VITE_ALADIN_URL,
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/aladin/, ''), // '/aladin' 제거
+        },
+      },
+    },
   }
 })
