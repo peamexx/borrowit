@@ -3,12 +3,13 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import './assets/styles/common/global/global.css';
 
-import Header from './layouts/global/Header';
+import { lazy } from 'react';
+const CustomHeader = lazy(() => import('virtual:client-header'));
 
 function App() {
   return (
     <>
-      <Header></Header>
+      <CustomHeader />
     </>
   )
 }
