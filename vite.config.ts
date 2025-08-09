@@ -60,7 +60,10 @@ export default defineConfig(({ mode }) => {
       __CLIENT__: JSON.stringify(ENV.VITE_CLIENT)
     },
     resolve: {
-      alias: [{ find: "@plugins", replacement: path.resolve(__dirname, "./src/plugins") }],
+      alias: [
+        { find: "@plugins", replacement: path.resolve(__dirname, "./src/plugins") },
+        { find: "@data", replacement: path.resolve(__dirname, "./src/data") }
+      ],
     },
   }
 })

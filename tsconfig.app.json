@@ -26,7 +26,8 @@
     /* Custom */
     "baseUrl": ".",
     "paths": {
-      "@plugins/*": ["src/plugins/*"]
+      "@plugins/*": ["src/plugins/*"],
+      "@data/*": ["src/data/*"]
     }
   },
   "include": ["src"]
