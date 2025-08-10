@@ -11,43 +11,44 @@ export type User = {
 
 type AuthState = {
   user: User | null;
-  error: string | null;
 
   isLogin: () => boolean;
-  login: (formData: any) => Promise<void>;
-  logout: () => void;
+  login: (formData: any) => Promise<{ success: boolean }>;
+  logout: () => Promise<boolean>;
 };
 
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       user: null,
-      error: null,
 
       isLogin: () => get().user ? true : false,
 
       login: async (formData) => {
-        set({ error: null });
         try {
           const userData = await doLogin(formData);
           if (userData) {
-            set({
-              user: userData ?? null,
-              error: null,
-            });
+            set({ user: userData ?? null, });
+            return { success: true, user: userData };
+          } else {
+            return { success: false, message: 'No User' };
           }
         } catch (err: any) {
-          set({
-            error: err?.message ?? "Login Fail",
-          });
-          throw err;
+          return { success: false, message: 'Login Fail' };
         }
       },
 
       logout: async () => {
-        const res = await doLogout();
-        if (res) {
-          set({ user: null, error: null });
+        try {
+          const res = await doLogout();
+          if (res) {
+            set({ user: null });
+            return true;
+          } else {
+            return false;
+          }
+        } catch (err) {
+          return false;
         }
       },
     }),

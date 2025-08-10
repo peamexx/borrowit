@@ -2,7 +2,7 @@ import { collection, query, where, getDocs, getDoc } from "firebase/firestore";
 import { db } from "@services/firebase/firebase";
 
 export const doLogin = async (formData: any) => {
-  const client: string = import.meta.env.VITE_CLIENTS || 'default';
+  const client: string = import.meta.env.VITE_CLIENT || 'default';
 
   const userQuery = query(
     collection(db, "member_master"),

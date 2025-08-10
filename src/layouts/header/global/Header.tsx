@@ -27,11 +27,13 @@ function Header() {
   };
 
   const handleLogout = async () => {
-    logout();
+    const res = await logout();
 
-    setTimeout(() => {
-      navigate("/");
-    }, 200);
+    if (res) {
+      setTimeout(() => {
+        navigate("/");
+      }, 200);
+    }
   }
 
   return (
