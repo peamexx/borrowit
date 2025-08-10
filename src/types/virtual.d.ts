@@ -1,3 +1,9 @@
+declare module 'virtual:client-login' {
+  import { ComponentType } from 'react'
+  const Login: ComponentType
+  export default Login
+}
+
 declare module 'virtual:client-header' {
   import { ComponentType } from 'react'
   const Header: ComponentType

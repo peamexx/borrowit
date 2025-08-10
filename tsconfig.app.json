@@ -27,6 +27,7 @@
     "baseUrl": ".",
     "paths": {
       "@data/*": ["src/data/*"],
+      "@layouts/*": ["src/layouts/*"],
       "@plugins/*": ["src/plugins/*"],
       "@services/*": ["src/services/*"],
     }

@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router";
 import App from '../App';
-import Login from '../layouts/login/global/Login';
-import BookList from '../layouts/books/book-list/BookList'
+import Login from '@layouts/login/Login';
+import BookList from '@layouts/books/book-list/BookList'
 import { useAuthStore } from "@services/login/global/userStore";
 
 const LoginLayout = () => {
@@ -19,34 +19,16 @@ export const router = createBrowserRouter([
     path: "/",
     Component: LoginLayout,
     children: [
+      // {
+      //   path: "/",
+      //   Component: Main
+      // },
       {
         path: "/book",
         children: [
           { path: "list", Component: BookList },
         ],
       },
-      {
-        path: "/book",
-        children: [
-          { path: "list", Component: BookList },
-        ],
-      },
-      // {
-      //   path: "auth",
-      //   Component: AuthLayout,
-      //   children: [
-      //     { path: "login", Component: Login },
-      //     { path: "register", Component: Register },
-      //   ],
-      // },
-      // {
-      //   path: "concerts",
-      //   children: [
-      //     { index: true, Component: ConcertsHome },
-      //     { path: ":city", Component: ConcertsCity },
-      //     { path: "trending", Component: ConcertsTrending },
-      //   ],
-      // },
     ],
   },
   {

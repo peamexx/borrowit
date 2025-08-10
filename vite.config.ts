@@ -11,6 +11,21 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       {
+        name: 'client-login-resolver',
+        resolveId(id) {
+          if (id === 'virtual:client-login') {
+            const clientPath = path.resolve(__dirname, `src/layouts/login/clients/${CLIENT}/Login.tsx`);
+            const globalPath = path.resolve(__dirname, 'src/layouts/login/global/Login.tsx');
+
+            if (fs.existsSync(clientPath)) {
+              return clientPath;
+            } else {
+              return globalPath;
+            }
+          }
+        }
+      },
+      {
         name: 'client-header-resolver',
         resolveId(id) {
           if (id === 'virtual:client-header') {
@@ -62,6 +77,7 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: [
         { find: "@data", replacement: path.resolve(__dirname, "./src/data") },
+        { find: "@layouts", replacement: path.resolve(__dirname, "./src/layouts") },
         { find: "@plugins", replacement: path.resolve(__dirname, "./src/plugins") },
         { find: "@services", replacement: path.resolve(__dirname, "./src/services") },
       ],
