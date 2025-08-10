@@ -26,6 +26,10 @@
   height: auto;
 }
 
+.text {
+  font-size: 0.9rem;
+}
+
 .userWrap {
   display: flex;
   justify-content: center;

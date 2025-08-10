@@ -12,7 +12,7 @@ import { useAuthStore } from '@services/login/global/userStore';
 
 function Header() {
   const navigate = useNavigate();
-  const { logout } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const toast = useRef(null);
 
   const handleConfirm = () => {
@@ -44,7 +44,7 @@ function Header() {
         사내 서비스 신청
       </div>
       <div className={styles.userWrap}>
-        admin
+        <div className={styles.text}>{user?.username} | {user?.roleName}</div>
         <Avatar icon="pi pi-user" shape="circle"></Avatar>
         <Button icon="pi pi-sign-out" rounded text severity="secondary" aria-label="로그아웃" onClick={handleConfirm} />
       </div>
