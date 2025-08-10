@@ -26,6 +26,7 @@
     /* Custom */
     "baseUrl": ".",
     "paths": {
+      "@components/*": ["src/components/*"],
       "@data/*": ["src/data/*"],
       "@layouts/*": ["src/layouts/*"],
       "@plugins/*": ["src/plugins/*"],

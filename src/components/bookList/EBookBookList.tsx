@@ -21,7 +21,7 @@ const DROPDOWN_RANGE = [
   { name: '50개', value: 50 }
 ];
 
-function PaperBookListPlugin(props: Props) {
+function EBookBookList(props: Props) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentInfo, setCurrentInfo] = useState({ page: 1, per: 10 });
@@ -90,4 +90,4 @@ function PaperBookListPlugin(props: Props) {
   </>)
 }
 
-export default PaperBookListPlugin;
+export default EBookBookList;

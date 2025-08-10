@@ -22,6 +22,7 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: [
+        { find: "@components", replacement: path.resolve(__dirname, "./src/components") },
         { find: "@data", replacement: path.resolve(__dirname, "./src/data") },
         { find: "@layouts", replacement: path.resolve(__dirname, "./src/layouts") },
         { find: "@plugins", replacement: path.resolve(__dirname, "./src/plugins") },
