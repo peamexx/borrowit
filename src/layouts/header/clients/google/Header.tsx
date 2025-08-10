@@ -1,7 +1,5 @@
 
 import styles from './header.module.css';
-import logoImg from './logo.svg';
-
 import { Avatar } from 'primereact/avatar';
 import { Button } from 'primereact/button';
 
@@ -10,7 +8,7 @@ function Header() {
     <div className={styles.header}>
       <Button icon="pi pi-cog" rounded text severity="secondary" aria-label="설정" />
       <div className={styles.logo}>
-        <img className={styles.logoIcon} src={logoImg} alt="" />
+        <img className={styles.logoIcon} src="./logo.png" alt="" />
         Upgrade your skills
       </div>
       <div className={styles.userWrap}>

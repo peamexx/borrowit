@@ -1,6 +1,5 @@
 
 import styles from './header.module.css';
-import logoImg from './logo.svg';
 import { useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { Avatar } from 'primereact/avatar';
@@ -42,7 +41,7 @@ function Header() {
       <ConfirmDialog />
       <Button icon="pi pi-cog" rounded text severity="secondary" aria-label="설정" />
       <div className={styles.logo}>
-        <img className={styles.logoIcon} src={logoImg} alt="" />
+        <img className={styles.logoIcon} src="./logo.png" alt="" />
         사내 서비스 신청
       </div>
       <div className={styles.userWrap}>
