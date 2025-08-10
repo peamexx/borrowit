@@ -30,6 +30,7 @@
       "@layouts/*": ["src/layouts/*"],
       "@plugins/*": ["src/plugins/*"],
       "@services/*": ["src/services/*"],
+      "@utils/*": ["src/utils/*"],
     }
   },
   "include": ["src"]

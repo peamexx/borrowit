@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router";
 import App from '../App';
 import Login from '@layouts/login/Login';
-import BookList from '@layouts/books/book-list/BookList'
+import BookList from '@layouts/bookList/BookList'
 import { useAuthStore } from "@services/login/global/userStore";
 
 const LoginLayout = () => {
