@@ -1,13 +1,43 @@
 
 import styles from './header.module.css';
 import logoImg from './logo.svg';
-
+import { useRef } from 'react';
+import { useNavigate } from 'react-router';
 import { Avatar } from 'primereact/avatar';
 import { Button } from 'primereact/button';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { Toast } from 'primereact/toast';
+
+import { useAuthStore } from '@services/login/global/userStore';
 
 function Header() {
+  const navigate = useNavigate();
+  const { logout } = useAuthStore();
+  const toast = useRef(null);
+
+  const handleConfirm = () => {
+    confirmDialog({
+      message: '로그아웃 하시겠습니까?',
+      header: '확인',
+      icon: 'pi pi-exclamation-triangle',
+      defaultFocus: 'accept',
+      accept: handleLogout,
+      reject: () => {},
+    });
+  };
+
+  const handleLogout = async () => {
+    logout();
+
+    setTimeout(() => {
+      navigate("/");
+    }, 200);
+  }
+
   return (
     <div className={styles.header}>
+      <Toast ref={toast} />
+      <ConfirmDialog />
       <Button icon="pi pi-cog" rounded text severity="secondary" aria-label="설정" />
       <div className={styles.logo}>
         <img className={styles.logoIcon} src={logoImg} alt="" />
@@ -16,7 +46,7 @@ function Header() {
       <div className={styles.userWrap}>
         admin
         <Avatar icon="pi pi-user" shape="circle"></Avatar>
-        <Button icon="pi pi-sign-out" rounded text severity="secondary" aria-label="로그아웃" />
+        <Button icon="pi pi-sign-out" rounded text severity="secondary" aria-label="로그아웃" onClick={handleConfirm} />
       </div>
     </div>
   )

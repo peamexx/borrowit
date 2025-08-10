@@ -61,8 +61,9 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: [
+        { find: "@data", replacement: path.resolve(__dirname, "./src/data") },
         { find: "@plugins", replacement: path.resolve(__dirname, "./src/plugins") },
-        { find: "@data", replacement: path.resolve(__dirname, "./src/data") }
+        { find: "@services", replacement: path.resolve(__dirname, "./src/services") },
       ],
     },
     server: {
