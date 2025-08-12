@@ -5,13 +5,13 @@ import { doLogin, doLogout } from '@services/login/global/login';
 export type User = {
   username: string;
   id: string;
+  companyName?: string;
   roleName?: string;
   permissions?: string[];
 };
 
 type AuthState = {
   user: User | null;
-
   isLogin: () => boolean;
   login: (formData: any) => Promise<{ success: boolean }>;
   logout: () => Promise<boolean>;
