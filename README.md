@@ -15,15 +15,51 @@
 
 # 기능1
 
-## 플러그인 형식 기능
+## 플러그인 구조 기능
+
+``` html
+<h3>도서 목록</h3>
+<BookList plugins={[Popup, Copy]} />
+<BookList />
+```
+
+같은 컴포넌트이지만 특정 상황에 따라 필요한 기능이 다를 수 있습니다.
+
+유연한 기능 추가를 위해 **플러그인을 객체로 정의하고, 독립적인 컴포넌트로 분리하여 확장성을 높였습니다**.
+
+``` tsx
+const Popup = {
+  name: 'popup',
+  event: 'click',
+  component: (props) => <ComponentUI {...props} />
+}
+```
+
+각 플러그인은 고유한 컴포넌트를 가지고 있습니다.
+
+``` tsx
+const PluginManagerProvider = () => {
+  return (
+    <Provider>
+      {children}
+      {activePlugin && activePlugin?.map((actPlug) => {
+        const PluginComponent = actPlug.plugin.component;
+        return <PluginComponent />;
+      })}
+    </Provider>
+  )
+}
+```
+
+특정 상황에서 `PluginProvider.tsx`은 플러그인을 받아 랜더링 합니다.
 
 # 기능2
 
 ## 개별 파일 빌드
 
-하나의 프로젝트에서 다양한 업체/조건 별로 개발해야 하는 경우가 있습니다.
+하나의 프로젝트에서 다양한 업체 별로 개발해야 하는 경우가 있습니다.
 
-이를 위해 공통인 global과 업체인 google을 예시로 하여 폴더 구조를 만들었다고 가정하겠습니다.
+이를 위해 업체 별로 폴더 구조를 분리하였습니다.
 
 ```
 menu/
@@ -34,25 +70,25 @@ menu/
         └── Menu.tsx
 ```
 
-그리고 env파일을 활용 해 아래와 같이 동적으로 컴포넌트를 불러옵니다.
+env파일을 활용 해 동적으로 컴포넌트를 불러오는 것이 일반적입니다.
 
 ``` tsx
-const CLIENT = import.meta.env.VITE_CLIENT;
-const CustomHeader = lazy(() => import(`/menu/${CLIENT}/Menu.tsx`));
+const CLIENT = import.meta.env.VITE_CLIENT; // global or google
+const CustomMenu = lazy(() => import(`/menu/${CLIENT}/Menu.tsx`));
 ```
 
 ### 이슈
 
-그러나 vite는 `빌드` 시 CLIENT 변수의 값을 알 수 없어, 최대한 일치하는 모든 파일을 번들에 포함시킵니다.
+그러나 vite는 `빌드` 시 CLIENT 변수의 값을 알 수 없어, 최대한 일치하는 모든 파일을 번들에 포함시키는 특징이 있습니다.
 
 예: google 관련 코드만 빌드 --> global, google, 기타 다른 업체 파일도 같이 빌드
 
-이를 방지하기 위해 vite 설정에서 `plugins`를 활용해 동적으로 가져올 파일을 직접 제어하도록 변경하였습니다.
-
 ### 해결
 
+vite의 `plugins` 설정에 커스텀 요소를 추가하여 동적으로 가져올 파일을 직접 제어하도록 변경하였습니다.
+
 ``` tsx
-const CustomHeader = lazy(() => import('virtual:client-menu'));
+const CustomMenu = lazy(() => import('virtual:client-menu'));
 ```
 
 위 명령을 통해 vite는 아래와 같이 동적으로 컴포넌트를 분리하여 돌려줍니다.
