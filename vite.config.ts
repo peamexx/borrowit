@@ -1,8 +1,8 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import { createAutoLayoutPlugin } from './src/utils/autoLayoutPlugin';
-import { copyLogoPlugin } from './src/utils/copyLogoPlugin';
+import { createAutoLayoutPlugin } from './src/utils/ViteAutoLayoutPlugin';
+import { copyLogoPlugin } from './src/utils/ViteCopyLogoPlugin';
 
 export default defineConfig(({ mode }) => {
   const ENV = loadEnv(mode, process.cwd(), '');
