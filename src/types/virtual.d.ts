@@ -16,6 +16,12 @@ declare module 'virtual:client-menu' {
   export default Menu
 }
 
+declare module 'virtual:client-main' {
+  import { ComponentType } from 'react'
+  const Main: ComponentType
+  export default Main
+}
+
 declare module 'virtual:client-bookList' {
   import { ComponentType } from 'react'
   const BookList: ComponentType

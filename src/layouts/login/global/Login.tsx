@@ -39,7 +39,7 @@ function Login() {
       <Toast ref={toast} />
       <Message className={styles.float} severity="warn" text="이 사이트는 포트폴리오용으로 제작되었습니다. 간편한 접속을 위해 비밀번호를 생략하였습니다." />
       <div className={styles.inner}>
-        <h2>사내 서비스 신청</h2>
+        <h2>일반 로그인 페이지</h2>
         <FloatLabel>
           <InputText id="id" value={value.id} onChange={(e) => setValue((prev) => ({ ...prev, id: e.target.value }))} />
           <label htmlFor="id">아이디</label>
