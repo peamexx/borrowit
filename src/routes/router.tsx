@@ -1,8 +1,10 @@
 import { createBrowserRouter, Navigate } from "react-router";
+
 import App from '../App';
 import Login from '@layouts/login/Login';
 import BookList from '@layouts/bookList/BookList'
 import { useAuthStore } from "@services/login/global/userStore";
+import { PluginManagerProvider } from '@plugins/PluginProvider';
 
 const LoginLayout = () => {
   const { isLogin } = useAuthStore();
@@ -11,7 +13,7 @@ const LoginLayout = () => {
     return <Navigate to="/login" />
   }
 
-  return <App />;
+  return <PluginManagerProvider><App /></PluginManagerProvider>;
 }
 
 export const router = createBrowserRouter([
@@ -19,10 +21,6 @@ export const router = createBrowserRouter([
     path: "/",
     Component: LoginLayout,
     children: [
-      // {
-      //   path: "/",
-      //   Component: Main
-      // },
       {
         path: "/book",
         children: [
