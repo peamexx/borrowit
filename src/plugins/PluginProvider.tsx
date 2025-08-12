@@ -22,7 +22,7 @@ interface OpenPropsType {
 }
 
 interface OpenPluginsType {
-  propsPlugins: PluginType[] | null;
+  propsPlugins: PluginType[] | undefined;
   eventName: PluginType['name'];
   configs: { name: PluginType['name'], data: activePluginType['data'] }[];
 }

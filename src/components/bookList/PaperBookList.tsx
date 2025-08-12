@@ -60,7 +60,7 @@ function PaperBookList(props: Props) {
   }
 
   const handleThumbnailHover = async (e: any, imgSrc: string) => {
-    openPlugins(props.plugins || null, 'hover', [
+    openPlugins(props.plugins, 'hover', [
       { name: 'hover-preview', data: { imgSrc: imgSrc, ref: e.currentTarget, onFail: (msg: string) => console.error(msg) } }
     ]);
   }
@@ -68,7 +68,7 @@ function PaperBookList(props: Props) {
   const handleCellClick = async (e: any) => {
     switch (e.cellIndex) {
       case 1: // 타이틀
-        openPlugins(props.plugins || null, 'click', [
+        openPlugins(props.plugins, 'click', [
           { name: 'book-detail-popup', data: e.rowData }
         ]);
         break;
