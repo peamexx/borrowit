@@ -18,9 +18,8 @@
 ### 플러그인 구조 기능
 
 ``` html
-<h3>도서 목록</h3>
-<BookList plugins={[Popup, Copy]} />
-<BookList />
+<List plugins={[Copy]} />
+<List plugins={[Popup]} />
 ```
 
 같은 컴포넌트이지만 특정 상황에 따라 필요한 기능이 다를 수 있습니다.
@@ -28,6 +27,7 @@
 유연한 기능 추가를 위해 **플러그인을 객체로 정의하고, 독립적인 컴포넌트로 분리하여 확장성을 높였습니다**.
 
 ``` tsx
+// src\plugins\BookDetailPopupPlugin.tsx
 const Popup = {
   name: 'popup',
   event: 'click',
@@ -37,7 +37,19 @@ const Popup = {
 
 각 플러그인은 고유한 컴포넌트를 가지고 있습니다.
 
+이러한 플러그인을 주입 후 원하는 상황에서 활성화 시킵니다 (예: 버튼 클릭)
+
+``` ts
+openPlugins(props.plugins, 'click', [
+  { name: 'copy', data: { onFail: () => {} } },
+  { name: 'popup', data: { ref: e.currentTarget } },
+]);
+```
+
+`PluginProvider.tsx`은 플러그인을 받아 해당 tsx를 랜더링합니다.
+
 ``` tsx
+// src\plugins\PluginProvider.tsx
 const PluginManagerProvider = () => {
   return (
     <Provider>
@@ -50,8 +62,6 @@ const PluginManagerProvider = () => {
   )
 }
 ```
-
-특정 상황에서 `PluginProvider.tsx`은 플러그인을 받아 랜더링 합니다.
 
 ## 기능2
 
@@ -79,9 +89,9 @@ const CustomMenu = lazy(() => import(`/menu/${CLIENT}/Menu.tsx`));
 
 #### 이슈
 
-그러나 vite는 `빌드` 시 CLIENT 변수의 값을 알 수 없어, 최대한 일치하는 모든 파일을 번들에 포함시키는 특징이 있습니다.
+그러나 vite는 `빌드` 시 CLIENT 변수의 값을 알 수 없기에, 최대한 일치하는 모든 파일을 번들에 포함시키는 특징이 있습니다.
 
-예: google 관련 코드만 빌드 --> global, google, 기타 다른 업체 파일도 같이 빌드
+(예: google 관련 코드만 빌드 --> global, google, 기타 다른 업체 파일도 같이 빌드)
 
 #### 해결
 
@@ -94,12 +104,16 @@ const CustomMenu = lazy(() => import('virtual:client-menu'));
 위 명령을 통해 vite는 아래와 같이 동적으로 컴포넌트를 분리하여 돌려줍니다.
 
 ``` ts
-// src/utils/createAutoLayoutPlugin.ts 참고
+// src/utils/createAutoLayoutPlugin.ts
 const clientPath = path.resolve(layoutsDir, `${name}/clients/${CLIENT}/${capitalize(name)}.tsx`);
 const globalPath = path.resolve(layoutsDir, `${name}/global/${capitalize(name)}.tsx`);
 
 return fs.existsSync(clientPath) ? clientPath : globalPath;
 ```
+
+이를 통해 빌드 뿐만이 아닌 개발 시에도 실시간으로 파일을 제어할 수 있습니다.
+
+(예: `어딘가에있는/google/logo.png`를 `public/logo.png`으로 옮겨 개발 시에도 이미지 파일을 볼 수 있음)
 
 ## 실행 방법
 
