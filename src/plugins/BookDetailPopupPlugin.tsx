@@ -36,7 +36,7 @@ function ComponentUI(props: PluginPropsType) {
   </>)
 }
 
-export const bookDetailPopupPlugin: PluginType = {
+export const BookDetailPopupPlugin: PluginType = {
   name: 'book-detail-popup',
   event: 'click',
   component: (props: PluginPropsType) => <ComponentUI {...props} />
