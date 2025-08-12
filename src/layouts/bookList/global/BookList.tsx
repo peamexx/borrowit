@@ -10,7 +10,7 @@ function BookList() {
   return (
     <div className={styles.wrap}>
       <h2>국내 도서 목록</h2>
-      <Message severity="info" text="플러그인 2개가 추가된 목록입니다. 썸네일 hover 또는 타이틀을 click해보세요." />
+      <Message severity="info" text="플러그인 2개가 추가된 목록입니다. 썸네일 hover 또는 책 이름을 click해보세요." />
       <PaperBookList
         tableProps={{ stripedRows: true, paginator: true, rows: 5 }}
         plugins={[bookDetailPopupPlugin, HoverPreviewPlugin]}
