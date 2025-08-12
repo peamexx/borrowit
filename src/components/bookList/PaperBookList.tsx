@@ -5,8 +5,7 @@ import type { DataTableProps } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Dropdown } from 'primereact/dropdown';
 
-import { usePluginManager } from '@plugins/PluginProvider';
-import { getUniqueKey } from '@utils/utils';
+import { usePluginManager, type PluginType } from '@plugins/PluginProvider';
 
 interface Book {
   id: number;
@@ -15,7 +14,7 @@ interface Book {
 type TableProps = DataTableProps<Book[]>;
 interface Props {
   tableProps: TableProps;
-  plugins?: any[];
+  plugins?: PluginType[];
 }
 
 const TARGET = 'Book';
@@ -26,7 +25,7 @@ const DROPDOWN_RANGE = [
 ];
 
 function PaperBookList(props: Props) {
-  const { openPlugin } = usePluginManager();
+  const { openPlugins } = usePluginManager();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentInfo, setCurrentInfo] = useState({ page: 1, per: 10 });
@@ -61,31 +60,17 @@ function PaperBookList(props: Props) {
   }
 
   const handleThumbnailHover = async (e: any, imgSrc: string) => {
-    if (!props.plugins || props.plugins.length === 0) return;
-
-    for (let p = 0; p < props.plugins?.length; p++) { //todo 공통?
-      const plug = props.plugins[p];
-      if (plug.name === 'hover-preview' && plug.event === 'hover') {
-        await openPlugin({
-          plugin: plug, key: getUniqueKey(), data: { imgSrc: imgSrc, ref: e.currentTarget }, onFail: (msg) => {
-            console.error(msg);
-          }
-        });
-      }
-    }
+    openPlugins(props.plugins || null, 'hover', [
+      { name: 'hover-preview', data: { imgSrc: imgSrc, ref: e.currentTarget, onFail: (msg: string) => console.error(msg) } }
+    ]);
   }
 
   const handleCellClick = async (e: any) => {
     switch (e.cellIndex) {
       case 1: // 타이틀
-        if (!props.plugins || props.plugins.length === 0) return;
-
-        for (let p = 0; p < props.plugins?.length; p++) { //todo 공통?
-          const plug = props.plugins[p];
-          if (plug.name === 'book-detail-popup' && plug.event === 'click') {
-            await openPlugin({ plugin: plug, key: getUniqueKey(), data: e.rowData });
-          }
-        }
+        openPlugins(props.plugins || null, 'click', [
+          { name: 'book-detail-popup', data: e.rowData }
+        ]);
         break;
     }
   }
