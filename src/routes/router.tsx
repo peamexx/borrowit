@@ -8,10 +8,13 @@ import { useAuthStore } from "@services/login/global/userStore";
 import { PluginManagerProvider } from '@plugins/PluginProvider';
 
 const LoginLayout = () => {
-  const { isLogin } = useAuthStore();
+  const { user, isLogin, logout } = useAuthStore();
 
   if (!isLogin()) {
     return <Navigate to="/login" />
+  }
+  if (user?.companyName !== (import.meta.env.VITE_CLIENT || 'default')) {
+    return logout();
   }
 
   return <PluginManagerProvider><App /></PluginManagerProvider>;
