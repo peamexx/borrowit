@@ -21,7 +21,7 @@ function Header() {
       icon: 'pi pi-exclamation-triangle',
       defaultFocus: 'accept',
       accept: handleLogout,
-      reject: () => {},
+      reject: () => { },
     });
   };
 
@@ -39,10 +39,10 @@ function Header() {
     <div className={styles.header}>
       <Toast ref={toast} />
       <ConfirmDialog />
-      <Button icon="pi pi-cog" rounded text severity="secondary" aria-label="설정" />
-      <div className={styles.logo}>
+      {/* <Button icon="pi pi-cog" rounded text severity="secondary" aria-label="설정" /> */}
+      <div className={styles.logo} onClick={() => navigate('/')} title="처음으로">
         <img className={styles.logoIcon} src="./logo.png" alt="" />
-        사내 서비스 신청
+        services
       </div>
       <div className={styles.userWrap}>
         <div className={styles.text}>{user?.username} | {user?.roleName}</div>
