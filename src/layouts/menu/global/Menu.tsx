@@ -3,7 +3,8 @@ import styles from './menu.module.css';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Tree } from 'primereact/tree';
-import menuJson from '@data/menu/global/menu.json';
+
+import menuData from '@data/menu/global/menuData';
 
 function Menu() {
   const navigate = useNavigate();
@@ -15,33 +16,47 @@ function Menu() {
   }, [])
 
   const fetchMenu = async () => {
-    if (menuJson && menuJson.menu) {
-      setMenu(menuJson.menu)
+    if (menuData) {
+      setMenu(menuData)
     }
   }
 
   const handleClick = (e: any) => {
-    if (e.node.key == 'manage:book') {
-      // todo나중에 공통으로 만들기
-      if (expandedKeys['manage:book']) {
-        let _expandedKeys = { ...expandedKeys };
-        delete _expandedKeys['manage:book'];
-
-        setExpandedKeys(_expandedKeys);
-      } else {
-        setExpandedKeys((prev: any) => ({ ...prev, 'manage:book': true }));
-      }
-      return;
+    if (e.node.children && e.node.children.length !== 0) {
+      expandMenu(e);
     }
-    if (e.node.key == 'book:list') {
-      navigate('/book/list');
-      return;
+
+    switch (e.node.key) {
+      case 'manage:plugin':
+        navigate('/book/list');
+        break;
     }
   }
 
+  const expandMenu = (e: any) => {
+    if (Object.keys(expandedKeys).length === 0) {
+      setExpandedKeys({ [e.node.key]: true });
+      return;
+    }
+
+    if (expandedKeys[e.node.key]) {
+      let _expandedKeys = { ...expandedKeys };
+      delete _expandedKeys[e.node.key];
+      setExpandedKeys(_expandedKeys);
+    } else {
+      setExpandedKeys((prev: any) => ({ ...prev, [e.node.key]: true }));
+    }
+  }
+
+  useEffect(() => {
+    console.debug('expandedKeys',expandedKeys);
+  }, [expandedKeys])
+
   return (
     <div className={styles.menu}>
-      <Tree value={menu} className={styles.treeWrap} expandedKeys={expandedKeys} onToggle={(e) => setExpandedKeys(e.value)} onNodeClick={handleClick} />
+      <Tree value={menu} className={styles.treeWrap}
+        expandedKeys={expandedKeys} onToggle={(e) => setExpandedKeys(e.value)}
+        onNodeClick={handleClick} />
     </div>
   )
 }
