@@ -10,18 +10,21 @@ export interface PluginPropsType {
   id: string;
   name: string;
   data?: any;
+  onFail?: (message: string) => void;
 }
 
 interface OpenPropsType {
   plugin: PluginType;
   key: string | number;
-  data?: any
+  data?: any;
+  onFail?: (message: string) => void;
 }
 
 interface activePluginType {
   plugin: PluginType;
   id: string;
   data?: any;
+  onFail?: (message: string) => void;
 }
 
 interface PendingType {
@@ -30,7 +33,7 @@ interface PendingType {
 }
 
 interface PluginManagerContextType {
-  openPlugin: (props: OpenPropsType) => any; // todo 왜안됨? Promise<boolean>
+  openPlugin: (props: OpenPropsType) => any; // todo 왜안됨? unknown으로 뜨는거 체크하기. Promise<boolean>
   closePlugin: (id: activePluginType['id']) => void;
   closePluginsByName: (name: PluginType['name']) => void;
 }
@@ -63,7 +66,7 @@ export function PluginManagerProvider({ children }: any) {
       setActivePlugin((prev) => {
         if (prev.length === 0) {
           // 아무 것도 없으면 바로 집어넣기.
-          return [{ plugin: props.plugin, id: newName, data: props.data }];
+          return [{ plugin: props.plugin, id: newName, data: props.data, onFail: props.onFail }];
         }
 
         // 특정한 플러그인은 사전작업이 필요함. 작업 후 새로운 플러그인 배열 받음.
@@ -76,11 +79,11 @@ export function PluginManagerProvider({ children }: any) {
         //   return newPrev;
         // }
 
-        return newPrev.concat([{ plugin: props.plugin, id: newName, data: props.data }]);
+        return newPrev.concat([{ plugin: props.plugin, id: newName, data: props.data, onFail: props.onFail }]);
       });
       setPendingOpen({ id: newName, res: res });
-    })
-  };
+  })
+};
 
   const closePlugin = (id: activePluginType['id']) => {
     const _p = activePlugin.filter((actPlug) => actPlug.id !== id);
@@ -108,7 +111,7 @@ export function PluginManagerProvider({ children }: any) {
       {children}
       {activePlugin && activePlugin?.map((actPlug) => {
         const PluginComponent = actPlug.plugin.component;
-        return <PluginComponent key={actPlug.id} id={actPlug.id} name={actPlug.plugin.name} data={actPlug.data} />;
+        return <PluginComponent key={actPlug.id} id={actPlug.id} name={actPlug.plugin.name} data={actPlug.data} onFail={actPlug.onFail} />;
       })}
     </PluginManagerContext.Provider>
   );
