@@ -104,7 +104,7 @@ const CustomMenu = lazy(() => import('virtual:client-menu'));
 위 명령을 통해 vite는 아래와 같이 동적으로 컴포넌트를 분리하여 돌려줍니다.
 
 ``` ts
-// src/utils/createAutoLayoutPlugin.ts
+// src/utils/ViteCopyLogoPlugin.ts
 const clientPath = path.resolve(layoutsDir, `${name}/clients/${CLIENT}/${capitalize(name)}.tsx`);
 const globalPath = path.resolve(layoutsDir, `${name}/global/${capitalize(name)}.tsx`);
 
