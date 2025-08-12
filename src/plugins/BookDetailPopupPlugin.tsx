@@ -5,7 +5,10 @@ import { Link } from "react-router";
 import { usePluginManager, type PluginPropsType, type PluginType } from "@plugins/PluginProvider";
 
 function ComponentUI(props: PluginPropsType) {
-  if (!props.data) return null;
+  if (!props.data) {
+    props.onFail?.(`Fail to fire Plugin: ${props.name}`);
+    return null;
+  }
 
   const [show, setShow] = useState(false);
   const { closePlugin } = usePluginManager();

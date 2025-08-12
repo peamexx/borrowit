@@ -12,15 +12,16 @@ interface Props extends PluginPropsType {
 }
 
 function ComponentUI(props: Props) {
+  const { closePlugin } = usePluginManager();
+
   if (!props.data.imgSrc || !props.data.ref) {
-    return;
+    props.onFail?.(`Fail to fire Plugin: ${props.name}`);
+    return null;
   };
 
-  const { closePlugin } = usePluginManager();
-  
   useEffect(() => {
     function _handleHoverEvent(e: any) {
-      if (e.target && !e.target.classList.contains('hover-preview')) {
+      if (e.target && !e.target.classList.contains('hover-preview-area')) {
         closePlugin(props.id);
       }
     }
@@ -32,16 +33,17 @@ function ComponentUI(props: Props) {
   }, [])
 
   return (<>
-    {createPortal(<div className="hover-preview" style={{
+    {createPortal(<div className="hover-preview-area" style={{
       position: 'absolute',
-      top: '-70px',
-      left: '0',
+      top: '-30px',
+      left: '30px',
       width: '120px',
       height: '100px',
       backgroundImage: `url(${props.data.imgSrc})`,
       backgroundRepeat: 'no-repeat',
       backgroundPosition: 'center',
       backgroundSize: 'auto 100px',
+      zIndex: 100,
     }} />, props.data.ref)}
   </>)
 }

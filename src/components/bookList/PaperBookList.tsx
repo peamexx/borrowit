@@ -63,10 +63,14 @@ function PaperBookList(props: Props) {
   const handleThumbnailHover = async (e: any, imgSrc: string) => {
     if (!props.plugins || props.plugins.length === 0) return;
 
-    for (let p = 0; p < props.plugins?.length; p++) { //todo 공통
+    for (let p = 0; p < props.plugins?.length; p++) { //todo 공통?
       const plug = props.plugins[p];
       if (plug.name === 'hover-preview' && plug.event === 'hover') {
-        await openPlugin({ plugin: plug, key: getUniqueKey(), data: { imgSrc: imgSrc } });
+        await openPlugin({
+          plugin: plug, key: getUniqueKey(), data: { imgSrc: imgSrc, ref: e.currentTarget }, onFail: (msg) => {
+            console.error(msg);
+          }
+        });
       }
     }
   }
@@ -76,7 +80,7 @@ function PaperBookList(props: Props) {
       case 1: // 타이틀
         if (!props.plugins || props.plugins.length === 0) return;
 
-        for (let p = 0; p < props.plugins?.length; p++) { //todo 공통
+        for (let p = 0; p < props.plugins?.length; p++) { //todo 공통?
           const plug = props.plugins[p];
           if (plug.name === 'book-detail-popup' && plug.event === 'click') {
             await openPlugin({ plugin: plug, key: getUniqueKey(), data: e.rowData });
@@ -92,7 +96,7 @@ function PaperBookList(props: Props) {
 
   const handleThumbnail = (book: any) => {
     return <div style={{ position: 'relative' }} onMouseEnter={(e: any) => handleThumbnailHover(e, book.cover)}>
-      <img src={book.cover} height={50} alt="" />
+      <img className="hover-preview-area" src={book.cover} height={50} alt="" />
     </div>
   }
 
@@ -113,7 +117,7 @@ function PaperBookList(props: Props) {
   }
 
   return (<>
-    <DataTable value={data} size="small" cellSelection selectionMode="single" header={headerComponents} loading={loading} {...props.tableProps}
+    <DataTable className="unset-overflow" value={data} size="small" cellSelection selectionMode="single" header={headerComponents} loading={loading} {...props.tableProps}
       onCellClick={handleCellClick}>
       <Column key="cover" field="cover" header="썸네일" body={handleThumbnail} />
       <Column key="title" field="title" header="책 이름" body={handleTitle} />
