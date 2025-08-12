@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
       copyLogoPlugin(CLIENT, 'BUILD'),
     ],
     define: {
-      __CLIENT__: JSON.stringify(ENV.VITE_CLIENT)
+      __CLIENT__: JSON.stringify(ENV.VITE_CLIENT) || 'defalut'
     },
     resolve: {
       alias: [
