@@ -4,11 +4,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Tree } from 'primereact/tree';
 
-import menuData from '@data/menu/global/menuData';
+import { menuData, type MenuListType } from '@data/menu/global/menuData';
+import { useAuthStore } from '@services/login/global/userStore';
 
 function Menu() {
   const navigate = useNavigate();
-  const [menu, setMenu]: any = useState({});
+  const { hasPermissions } = useAuthStore();
+  const [menu, setMenu]: any = useState<MenuListType[]>([]);
   const [expandedKeys, setExpandedKeys]: any = useState({});
 
   useEffect(() => {
@@ -17,8 +19,31 @@ function Menu() {
 
   const fetchMenu = async () => {
     if (menuData) {
-      setMenu(menuData)
+      const _m = authorizedMenu(menuData);
+      setMenu(_m);
     }
+  }
+
+  const authorizedMenu = (menuData: MenuListType[]) => {
+    let r: MenuListType[] = [];
+    menuData.forEach((menu: MenuListType) => {
+      if (menu.children && menu.children.length !== 0) {
+        const newChildren: any = authorizedMenu(menu.children);
+        r.push({ ...menu, children: newChildren });
+        return;
+      }
+
+      if (!menu.permission) {
+        r.push(menu);
+        return;
+      }
+
+      if (hasPermissions(menu.permission)) {
+        r.push(menu);
+        return;
+      }
+    })
+    return r;
   }
 
   const handleClick = (e: any) => {
@@ -47,10 +72,6 @@ function Menu() {
       setExpandedKeys((prev: any) => ({ ...prev, [e.node.key]: true }));
     }
   }
-
-  useEffect(() => {
-    console.debug('expandedKeys',expandedKeys);
-  }, [expandedKeys])
 
   return (
     <div className={styles.menu}>

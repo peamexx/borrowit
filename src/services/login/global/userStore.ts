@@ -15,6 +15,7 @@ type AuthState = {
   isLogin: () => boolean;
   login: (formData: any) => Promise<{ success: boolean }>;
   logout: () => Promise<boolean>;
+  hasPermissions: (key: string) => boolean;
 };
 
 export const useAuthStore = create<AuthState>()(
@@ -51,6 +52,13 @@ export const useAuthStore = create<AuthState>()(
           return false;
         }
       },
+
+      hasPermissions: (key: string) => {
+        const permissions = get().user?.permissions;
+        if (!permissions) return false;
+
+        return permissions.includes(key);
+      }
     }),
     {
       name: "auth-storage",
