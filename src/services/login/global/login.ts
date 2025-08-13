@@ -4,6 +4,7 @@ import { db } from "@services/firebase/firebase";
 export const doLogin = async (formData: any) => {
   const client: string = import.meta.env.VITE_CLIENT || 'default';
 
+  // 1. env에 맞는 업체 데이터 가져오기.
   const companyQuery = query(
     collection(db, "company_master"),
     where("companyName", "==", client)
@@ -14,6 +15,7 @@ export const doLogin = async (formData: any) => {
     return null;
   }
 
+  // 2. id와 업체 정보로 user 데이터 가져오기.
   const userQuery = query(
     collection(db, "member_master"),
     where("id", "==", formData.id),
@@ -25,6 +27,7 @@ export const doLogin = async (formData: any) => {
     return null;
   }
 
+  // 3. user 권한 가져오기.
   const roleDoc: any = await getDoc(querySnapshot.docs[0].data().roleRef);
   if (!roleDoc.exists()) {
     console.warn('Login Fail: role');
@@ -37,7 +40,7 @@ export const doLogin = async (formData: any) => {
     id: querySnapshot.docs[0].data().id,
     companyName: companySnapshot.docs[0].data().companyName,
     roleName: roleDoc.data().roleName,
-    permissions: roleDoc.data().permissions,
+    permissions: roleDoc.data().permissions.map((p: any) => p.id)
   }
 }
 

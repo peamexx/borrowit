@@ -13,6 +13,11 @@ export interface MenuListType {
   children?: MenuType[];
 }
 
+export const PERMISSIONS = {
+  OVERDUE_READ: 'OVERDUE_READ',
+  MOVIE_ADD: 'MOVIE_ADD'
+};
+
 export const menuData = [
   {
     key: 'manage:plugin',
@@ -26,12 +31,6 @@ export const menuData = [
     icon: 'pi pi-ticket',
     children: [
       {
-        key: 'book:list',
-        label: '도서 목록',
-        icon: 'pi pi-book',
-        permission: 'BOOK_READ'
-      },
-      {
         key: 'my:book:due:list',
         label: '내 대출 목록',
         icon: 'pi pi-check',
@@ -41,7 +40,7 @@ export const menuData = [
         key: 'book:overdue:list',
         label: '사용자 연체 목록',
         icon: 'pi pi-bookmark-fill',
-        permission: 'BOOK_OVERDUE_READ',
+        permission: PERMISSIONS.OVERDUE_READ,
         path: '/due/users',
       },
     ]

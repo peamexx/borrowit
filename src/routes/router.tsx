@@ -8,6 +8,12 @@ import DueList from '@layouts/dueList/DueList'
 import DueListAllUsers from '@layouts/dueListAllUsers/DueListAllUsers'
 import { useAuthStore } from "@services/login/global/userStore";
 import { PluginManagerProvider } from '@plugins/PluginProvider';
+import { PERMISSIONS } from '@data/menu/global/menuData';
+
+interface PermissionGuardType {
+  children: React.ReactNode;
+  permissionKey: string;
+}
 
 const LoginLayout = () => {
   const { user, isLogin, logout } = useAuthStore();
@@ -20,6 +26,16 @@ const LoginLayout = () => {
   }
 
   return <PluginManagerProvider><App /></PluginManagerProvider>;
+}
+
+const PermissionGuard = ({ children, permissionKey }: PermissionGuardType) => {
+  const { hasPermissions } = useAuthStore();
+
+  if (!hasPermissions(permissionKey)) {
+    return <Navigate to="/" />
+  }
+
+  return <PluginManagerProvider>{children}</PluginManagerProvider>;
 }
 
 export const router = createBrowserRouter([
@@ -41,7 +57,7 @@ export const router = createBrowserRouter([
         path: "/due",
         children: [
           { path: "list", Component: DueList },
-          { path: "users", Component: DueListAllUsers },
+          { path: "users", Component: () => <PermissionGuard permissionKey={PERMISSIONS.OVERDUE_READ}><DueListAllUsers /></PermissionGuard> },
         ],
       },
     ],
