@@ -13,7 +13,8 @@ export const createAutoLayoutPlugin = (CLIENT: string) => {
   const components = fs.readdirSync(layoutsDir, { withFileTypes: true })
     .filter(dirent => dirent.isDirectory())
     .map(dirent => dirent.name);
-  console.debug('AutoLayoutPlugin: ', components);
+
+  console.log(`✅ 동적 컴포넌트 로드 대상: ${components}`);
 
   return {
     name: 'auto-layout-resolver',
@@ -21,8 +22,6 @@ export const createAutoLayoutPlugin = (CLIENT: string) => {
       const match = id.match(/^virtual:client-(.+)$/);
       if (match) {
         const componentName = match[1];
-        console.debug('componentName', componentName);
-
         if (components.includes(componentName)) {
           const clientPath = path.resolve(layoutsDir, `${componentName}/clients/${CLIENT}/${capitalize(componentName)}.tsx`);
           const globalPath = path.resolve(layoutsDir, `${componentName}/global/${capitalize(componentName)}.tsx`);

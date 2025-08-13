@@ -8,7 +8,8 @@ export default defineConfig(({ mode }) => {
   const ENV = loadEnv(mode, process.cwd(), '');
   const CLIENT = ENV.VITE_CLIENT || 'default';
 
-  console.debug('env CLIENT: ', CLIENT);
+  console.log(`✅ ENV: ${CLIENT}`);
+  
   copyLogoPlugin(CLIENT, 'DEV');
 
   return {
