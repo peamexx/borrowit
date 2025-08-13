@@ -1,0 +1,10 @@
+.wrap {
+  width: calc(100% - 250px);
+  height: calc(100% - 1rem);
+  margin-right: 1rem;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, .02), 0 0 2px rgba(0, 0, 0, .05), 0 1px 4px rgba(0, 0, 0, .08);
+  background-color: var(--surface-50);
+  overflow-y: auto;
+}

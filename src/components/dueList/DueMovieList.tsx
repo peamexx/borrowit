@@ -5,7 +5,7 @@ import type { DataTableProps } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 
 import { type PluginType } from '@plugins/PluginProvider';
-import { getDueListUser } from '@services/api/api';
+import { getApi, API_KEY } from '@services/api/api';
 import { useAuthStore } from '@services/auth/userStore';
 
 interface Book {
@@ -28,16 +28,20 @@ function DueMovieList(_props: Props) {
   }, []);
 
   const fetchList = async () => {
+    if (!user) return;
+
     try {
       setLoading(true);
 
-      const list = await getDueListUser(user);
+      const list = await getApi(API_KEY.GET_DUELIST, user);
       if (list) {
         setData(list);
         setLoading(false);
       }
     } catch (error) {
       console.debug(error);
+      setLoading(false);
+    } finally {
       setLoading(false);
     }
   }

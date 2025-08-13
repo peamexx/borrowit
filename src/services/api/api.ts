@@ -1,6 +1,29 @@
 import { doc, collection, query, where, getDocs, getDoc } from "firebase/firestore";
 import { db } from "@services/firebase/firebase";
 
+export const API_KEY = {
+  GET_DUELIST: 'GET_DUELIST',
+  GET_DUELIST_ALL_USERS: 'GET_DUELIST_ALL_USERS',
+}
+
+export const getApi = async (key: string, options = {}, timeout = 3000) => {
+  const timeoutPromise = new Promise((_, reject) => {
+    return setTimeout(() => reject(false), timeout);
+  });
+
+  let fetchPromise;
+  switch (key) {
+    case 'GET_DUELIST':
+      fetchPromise = await getDueListUser({ ...options });
+      break;
+    case 'GET_DUELIST_ALL_USERS':
+      fetchPromise = await getDueListAllUsers();
+      break;
+  }
+
+  return Promise.race([fetchPromise, timeoutPromise]);
+}
+
 export const getDueListUser = async (user: any) => {
   const dueQuery = query(
     collection(db, "due_master"),
