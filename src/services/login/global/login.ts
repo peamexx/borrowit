@@ -32,6 +32,7 @@ export const doLogin = async (formData: any) => {
   }
 
   return {
+    userRefStr: querySnapshot.docs[0].ref.path,
     username: querySnapshot.docs[0].data().username,
     id: querySnapshot.docs[0].data().id,
     companyName: companySnapshot.docs[0].data().companyName,

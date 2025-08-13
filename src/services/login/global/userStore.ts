@@ -3,6 +3,7 @@ import { persist } from "zustand/middleware";
 import { doLogin, doLogout } from '@services/login/global/login';
 
 export type User = {
+  userRefStr: string;
   username: string;
   id: string;
   companyName?: string;

@@ -51,10 +51,8 @@ function Menu() {
       expandMenu(e);
     }
 
-    switch (e.node.key) {
-      case 'manage:plugin':
-        navigate('/book/list');
-        break;
+    if (e.node.path) {
+      navigate(e.node.path);
     }
   }
 

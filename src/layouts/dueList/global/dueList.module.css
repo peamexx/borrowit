@@ -1,0 +1,12 @@
+.wrap {
+  width: calc(100% - 230px);
+  height: 100%;
+  padding: 1rem 2rem;
+  background-color: var(--surface-50);
+  overflow-y: auto;
+}
+
+.mb10 {
+  display: block;
+  margin-bottom: 10px;
+}

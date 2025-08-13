@@ -27,3 +27,9 @@ declare module 'virtual:client-bookList' {
   const BookList: ComponentType
   export default BookList
 }
+
+declare module 'virtual:client-dueList' {
+  import { ComponentType } from 'react'
+  const DueList: ComponentType
+  export default DueList
+}
