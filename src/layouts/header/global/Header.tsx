@@ -45,7 +45,7 @@ function Header() {
         services
       </div>
       <div className={styles.userWrap}>
-        <div className={styles.text}>{user?.username} | {user?.roleName}</div>
+        <div className={styles.text}>{user?.username} (<span className={styles.point}>{user?.roleName}</span>)</div>
         <Avatar icon="pi pi-user" shape="circle"></Avatar>
         <Button icon="pi pi-sign-out" rounded text severity="secondary" aria-label="로그아웃" onClick={handleConfirm} />
       </div>

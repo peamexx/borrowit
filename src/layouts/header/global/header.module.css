@@ -38,3 +38,7 @@
   gap: 10px;
   color: var(--text-color);
 }
+
+.point {
+  color: var(--blue-500);
+}
