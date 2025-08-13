@@ -1,6 +1,7 @@
 interface MenuType {
   key: string;
   label: string;
+  path?: string;
   icon?: string;
   permission?: string;
 }
@@ -8,6 +9,7 @@ interface MenuType {
 export interface MenuListType {
   key: string;
   label: string;
+  path?: string;
   icon?: string;
   permission?: string;
   children?: MenuType[];

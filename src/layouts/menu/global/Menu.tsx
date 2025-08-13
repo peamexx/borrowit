@@ -1,7 +1,7 @@
 
 import styles from './menu.module.css';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { Tree } from 'primereact/tree';
 
 import { menuData, type MenuListType } from '@data/menu/global/menuData';
@@ -9,6 +9,7 @@ import { useAuthStore } from '@services/auth/userStore';
 
 function Menu() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { hasPermissions } = useAuthStore();
   const [menu, setMenu]: any = useState<MenuListType[]>([]);
   const [expandedKeys, setExpandedKeys]: any = useState({});
@@ -16,6 +17,15 @@ function Menu() {
   useEffect(() => {
     fetchMenu();
   }, [])
+
+  useEffect(() => {
+    if (menu.length !== 0) {
+      const enableKeys = getEnabledMenu(menu, location.pathname);
+      if (enableKeys && enableKeys.length !== 0) {
+        setExpandedKeys((prev: any) => ({ ...prev, ...enableKeys[0] }));
+      }
+    }
+  }, [menu])
 
   const fetchMenu = async () => {
     if (menuData) {
@@ -41,6 +51,29 @@ function Menu() {
       if (hasPermissions(menu.permission)) {
         r.push(menu);
         return;
+      }
+    })
+    return r;
+  }
+
+  const getEnabledMenu = (menuData: MenuListType[], currentPath: string, isChild?: boolean, parentsKey?: string) => {
+    let r: any = [];
+    menuData.forEach((menu: MenuListType) => {
+      if (menu.path && menu.path === currentPath) {
+        if (isChild) {
+          if (parentsKey) {
+            r.push({ [parentsKey]: true });
+          }
+        } else {
+          r.push({ [menu.key]: true });
+        }
+      }
+
+      if (menu.children && menu.children.length !== 0) {
+        const childRound: any = getEnabledMenu(menu.children, currentPath, true, menu.key);
+        if (childRound && childRound.length !== 0) {
+          r.push(childRound[0]);
+        }
       }
     })
     return r;
