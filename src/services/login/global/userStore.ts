@@ -19,6 +19,8 @@ type AuthState = {
   hasPermissions: (key: string) => boolean;
 };
 
+const EXPIRY_MS = 24 * 60 * 60 * 1000; // 하루
+
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
@@ -64,6 +66,35 @@ export const useAuthStore = create<AuthState>()(
     {
       name: "auth-storage",
       partialize: (state) => ({ user: state.user }),
+      storage: {
+        getItem: (name) => {
+          const str = localStorage.getItem(name);
+          if (!str) return null;
+
+          try {
+            const parsed = JSON.parse(str);
+
+            if (Date.now() - parsed.timestamp > EXPIRY_MS) {
+              localStorage.removeItem(name);
+              return null;
+            }
+
+            return parsed.value;
+          } catch {
+            return null;
+          }
+        },
+        setItem: (name, value) => {
+          localStorage.setItem(
+            name,
+            JSON.stringify({
+              value,
+              timestamp: Date.now(),
+            })
+          );
+        },
+        removeItem: (name) => localStorage.removeItem(name),
+      },
     }
   )
 );
