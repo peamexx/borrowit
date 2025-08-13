@@ -18,7 +18,6 @@ export const doLogin = async (formData: any) => {
     collection(db, "member_master"),
     where("id", "==", formData.id),
     where("companyRef", "==", companySnapshot.docs[0].ref),
-    where("useYn", "==", "Y"),
   );
   const querySnapshot = await getDocs(userQuery);
   if (querySnapshot.empty) {
