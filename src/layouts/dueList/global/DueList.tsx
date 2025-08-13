@@ -2,6 +2,7 @@ import styles from './dueList.module.css';
 import { Message } from 'primereact/message';
 
 import DueMovieList from '@components/dueList/DueMovieList';
+import SendMessageButton from '@components/button/SendMessageButton';
 
 function DueList() {
   return (
@@ -12,6 +13,7 @@ function DueList() {
       <Message severity="success" text="로그인 한 대상에 따라 다른 데이터가 나와야 합니다." />
       <span className={styles.mb10}></span>
       <DueMovieList />
+      <SendMessageButton />
     </div>
   )
 }
