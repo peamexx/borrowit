@@ -5,6 +5,7 @@ import { Column } from 'primereact/column';
 
 import { type PluginType } from '@plugins/PluginProvider';
 import { getApi, API_KEY } from '@services/api/api';
+import { useAuthStore } from '@services/auth/userStore';
 
 interface Book {
   id: number;
@@ -17,6 +18,7 @@ interface Props {
 }
 
 function DueMovieListAllUsers(_props: Props) {
+  const { user } = useAuthStore();
   const [data, setData] = useState<any>([]);
   const [loading, setLoading] = useState(false);
 
@@ -25,10 +27,12 @@ function DueMovieListAllUsers(_props: Props) {
   }, []);
 
   const fetchList = async () => {
+    if (!user) return;
+
     try {
       setLoading(true);
 
-      const list = await getApi(API_KEY.GET_DUELIST_ALL_USERS);
+      const list = await getApi(API_KEY.GET_DUELIST_ALL_USERS, user);
       if (list) {
         setData(list);
         setLoading(false);

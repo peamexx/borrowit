@@ -6,6 +6,7 @@ export type User = {
   userRefStr: string;
   username: string;
   id: string;
+  companyRefStr: string;
   companyName?: string;
   roleName?: string;
   permissions?: string[];

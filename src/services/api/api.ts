@@ -1,12 +1,14 @@
 import { doc, collection, query, where, getDocs, getDoc } from "firebase/firestore";
+
 import { db } from "@services/firebase/firebase";
+import type { User } from "@services/auth/userStore";
 
 export const API_KEY = {
   GET_DUELIST: 'GET_DUELIST',
   GET_DUELIST_ALL_USERS: 'GET_DUELIST_ALL_USERS',
 }
 
-export const getApi = async (key: string, options = {}, timeout = 3000) => {
+export const getApi = async (key: string, options: any = {}, timeout = 3000) => {
   const timeoutPromise = new Promise((_, reject) => {
     return setTimeout(() => reject(false), timeout);
   });
@@ -17,14 +19,14 @@ export const getApi = async (key: string, options = {}, timeout = 3000) => {
       fetchPromise = await getDueListUser({ ...options });
       break;
     case 'GET_DUELIST_ALL_USERS':
-      fetchPromise = await getDueListAllUsers();
+      fetchPromise = await getDueListAllUsers({ ...options });
       break;
   }
 
   return Promise.race([fetchPromise, timeoutPromise]);
 }
 
-export const getDueListUser = async (user: any) => {
+export const getDueListUser = async (user: User) => {
   const dueQuery = query(
     collection(db, "due_master"),
     where("memberRef", "==", doc(db, user.userRefStr)),
@@ -54,14 +56,15 @@ export const getDueListUser = async (user: any) => {
   return movieNames;
 }
 
-export const getDueListAllUsers = async () => {
+export const getDueListAllUsers = async (user: User) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const todayStr = today.toISOString().slice(0, 10); // ex. "2025-08-13"
 
   const dueQuery = query(
     collection(db, "due_master"),
-    where("endDate", "<", todayStr)
+    where("companyRef", "==", doc(db, user.companyRefStr)),
+    where("endDate", "<", todayStr),
   );
   const dueSnapshot = await getDocs(dueQuery);
   if (dueSnapshot.empty) {

@@ -38,6 +38,7 @@ export const doLogin = async (formData: any) => {
     userRefStr: querySnapshot.docs[0].ref.path,
     username: querySnapshot.docs[0].data().username,
     id: querySnapshot.docs[0].data().id,
+    companyRefStr: companySnapshot.docs[0].ref.path,
     companyName: companySnapshot.docs[0].data().companyName,
     roleName: roleDoc.data().roleName,
     permissions: roleDoc.data().permissions.map((p: any) => p.id)
