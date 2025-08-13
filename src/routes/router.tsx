@@ -5,6 +5,7 @@ import Login from '@layouts/login/Login';
 import Main from '@layouts/main/Main'
 import BookList from '@layouts/bookList/BookList'
 import DueList from '@layouts/dueList/DueList'
+import DueListAllUsers from '@layouts/dueListAllUsers/DueListAllUsers'
 import { useAuthStore } from "@services/login/global/userStore";
 import { PluginManagerProvider } from '@plugins/PluginProvider';
 
@@ -40,6 +41,7 @@ export const router = createBrowserRouter([
         path: "/due",
         children: [
           { path: "list", Component: DueList },
+          { path: "users", Component: DueListAllUsers },
         ],
       },
     ],

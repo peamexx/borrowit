@@ -41,7 +41,8 @@ export const menuData = [
         key: 'book:overdue:list',
         label: '사용자 연체 목록',
         icon: 'pi pi-bookmark-fill',
-        permission: 'BOOK_OVERDUE_READ'
+        permission: 'BOOK_OVERDUE_READ',
+        path: '/due/users',
       },
     ]
   },

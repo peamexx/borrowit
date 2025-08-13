@@ -33,3 +33,9 @@ declare module 'virtual:client-dueList' {
   const DueList: ComponentType
   export default DueList
 }
+
+declare module 'virtual:client-dueListAllUsers' {
+  import { ComponentType } from 'react'
+  const DueListAllUsers: ComponentType
+  export default DueListAllUsers
+}
