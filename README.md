@@ -13,6 +13,22 @@
 | 상태 관리 | [zustand](https://zustand-demo.pmnd.rs/) | 5.0.7 |
 | 라우터 | [React Router](https://reactrouter.com/en/main) | 7.8.0 |
 
+## 구조
+
+```
+public 정적 assets 파일 (예: logo)
+src/
+├── assets # 공통 css 등 파일(업체별로 폴더 구조 분리)
+├── components 공통 컴포넌트
+├── data # 메뉴데이터 등 데이터 (업체별로 폴더 구조 분리)
+├── layouts # header, list 등 구조 별 컴포넌트 (업체별로 폴더 구조 분리)
+├── plugins # 플러그인 기능 및 provider
+├── routes
+├── services # api, auth 등 core 서비스
+├── types
+└── utils # vite 및 내부에서 사용하는 유틸 함수
+```
+
 ## 기능1
 
 ### 플러그인 구조 기능
@@ -194,19 +210,6 @@ VITE_CLIENT=google
 | 개발 | `npm run:dev` | |
 | 진입 경로 | http://localhost:5174/ |
 | 빌드 | `npm run build` |
-
-## 구조
-
-```
-resource/
-└── data # 목차/검색용 데이터 (toc.json, search.json)
-src/
-├── capture # 메인 상위 컴포넌트
-├── context # 전역 관리
-├── core # epub 파일을 뷰어로 만들어주는 핵심 코어
-├── site # 출판사/과목별 컴포넌트
-└── utils
-```
 
 ## 규칙
 
