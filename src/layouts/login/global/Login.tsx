@@ -8,7 +8,7 @@ import { Button } from 'primereact/button';
 import { Message } from 'primereact/message';
 import { Toast } from 'primereact/toast';
 
-import { useAuthStore } from '@services/login/global/userStore';
+import { useAuthStore } from '@services/auth/userStore';
 
 function Login() {
   const navigate = useNavigate();

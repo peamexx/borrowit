@@ -6,7 +6,7 @@ import { Column } from 'primereact/column';
 
 import { type PluginType } from '@plugins/PluginProvider';
 import { getDueListUser } from '@services/api/api';
-import { useAuthStore } from '@services/login/global/userStore';
+import { useAuthStore } from '@services/auth/userStore';
 
 interface Book {
   id: number;

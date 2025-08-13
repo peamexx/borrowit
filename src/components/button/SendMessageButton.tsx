@@ -1,7 +1,7 @@
 import { Button } from 'primereact/button';
 import { Message } from 'primereact/message';
 
-import { useAuthStore } from '@services/login/global/userStore';
+import { useAuthStore } from '@services/auth/userStore';
 import { PERMISSIONS } from '@data/menu/global/menuData';
 
 function SendMessageButton() {

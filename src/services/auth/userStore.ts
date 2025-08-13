@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from "zustand/middleware";
-import { doLogin, doLogout } from '@services/login/global/login';
+import { doLogin, doLogout } from '@services/auth/login';
 
 export type User = {
   userRefStr: string;

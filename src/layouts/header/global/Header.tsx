@@ -7,7 +7,7 @@ import { Button } from 'primereact/button';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { Toast } from 'primereact/toast';
 
-import { useAuthStore } from '@services/login/global/userStore';
+import { useAuthStore } from '@services/auth/userStore';
 
 function Header() {
   const navigate = useNavigate();

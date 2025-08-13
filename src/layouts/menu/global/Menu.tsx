@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router';
 import { Tree } from 'primereact/tree';
 
 import { menuData, type MenuListType } from '@data/menu/global/menuData';
-import { useAuthStore } from '@services/login/global/userStore';
+import { useAuthStore } from '@services/auth/userStore';
 
 function Menu() {
   const navigate = useNavigate();

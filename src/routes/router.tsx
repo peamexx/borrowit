@@ -6,7 +6,7 @@ import Main from '@layouts/main/Main'
 import BookList from '@layouts/bookList/BookList'
 import DueList from '@layouts/dueList/DueList'
 import DueListAllUsers from '@layouts/dueListAllUsers/DueListAllUsers'
-import { useAuthStore } from "@services/login/global/userStore";
+import { useAuthStore } from "@services/auth/userStore";
 import { PluginManagerProvider } from '@plugins/PluginProvider';
 import { PERMISSIONS } from '@data/menu/global/menuData';
 
