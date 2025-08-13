@@ -22,7 +22,7 @@
 <List plugins={[Popup]} />
 ```
 
-같은 컴포넌트이지만 특정 상황에 따라 필요한 기능이 다를 수 있습니다.
+같은 컴포넌트이지만 필요한 기능이 다를 수 있습니다.
 
 유연한 기능 추가를 위해 **플러그인을 객체로 정의하고, 독립적인 컴포넌트로 분리하여 확장성을 높였습니다**.
 
@@ -37,9 +37,10 @@ const Popup = {
 
 각 플러그인은 고유한 컴포넌트를 가지고 있습니다.
 
-이러한 플러그인을 주입 후 원하는 상황에서 활성화 시킵니다 (예: 버튼 클릭)
+이러한 플러그인을 주입 후 원하는 상황에서 활성화 시킵니다.
 
 ``` ts
+// 버튼 클릭 시 실행
 openPlugins(props.plugins, 'click', [
   { name: 'copy', data: { onFail: () => {} } },
   { name: 'popup', data: { ref: e.currentTarget } },
@@ -67,7 +68,7 @@ const PluginManagerProvider = () => {
 
 ### 개별 파일 빌드
 
-하나의 프로젝트에서 다양한 업체 별로 개발해야 하는 경우가 있습니다.
+하나의 프로젝트에서 다양한 업체 별로 개발/빌드해야 하는 경우가 있습니다.
 
 이를 위해 업체 별로 폴더 구조를 분리하였습니다.
 
@@ -95,9 +96,17 @@ const CustomMenu = lazy(() => import(`/menu/${CLIENT}/Menu.tsx`));
 
 #### 해결
 
-vite의 `plugins` 설정에 커스텀 요소를 추가하여 동적으로 가져올 파일을 직접 제어하도록 변경하였습니다.
+vite의 `plugins` 설정에 커스텀 요소를 추가하여 **동적으로 가져올 파일을 직접 제어하도록 변경**하였습니다.
 
 ``` tsx
+// vite.config.ts
+plugins: [
+  react(),
+  createAutoLayoutPlugin(CLIENT), // 동적 컴포넌트 제어
+  copyLogoPlugin(CLIENT, 'BUILD'), // 로고 파일을 최상단으로 올려줌
+],
+
+// 컴포넌트
 const CustomMenu = lazy(() => import('virtual:client-menu'));
 ```
 
@@ -119,9 +128,9 @@ return fs.existsSync(clientPath) ? clientPath : globalPath;
 
 ### 역할 별 페이지 제어
 
-다양한 계정에 따라 메뉴, 컴포넌트 등을 다르게 처리해야할 때가 있습니다.
+특정 계정에 따라 메뉴, 컴포넌트 등을 다르게 처리해야할 때가 있습니다.
 
-일반적인 role 기반 관리는 직책이 많을 경우 세밀한 관리가 불가능합니다.
+일반적인 role 기반 관리는 단순하기 때문에 아래와 같이 `권한`으로 사용자를 분리했습니다.
 
 ``` ts
 export const PERMISSIONS = {
@@ -140,7 +149,7 @@ const user = {
 }
 ```
 
-위와 같이 `권한`으로 사용자를 분리하여 화면을 구상하였습니다.
+이를 통해 **메뉴/페이지/컴포넌트 등 세밀한 관리가 가능합니다.**
 
 ``` tsx
 // 라우터 src\routes\router.tsx
@@ -180,8 +189,6 @@ VITE_CLIENT=google
 
 2. `npm run dev`
 
----
-
 | 종류 | 내용 | 비고 |
 | -- | -- | -- |
 | 개발 | `npm run:dev` | |
@@ -212,7 +219,7 @@ src/
 
 2. [선택] public/logo 폴더 내 규칙에 맞게 `logo.png`라는 이름으로 파일 넣기
 
-- 없으면 기본 logo로 개발/빌드 됨.
+  없으면 기본 logo로 개발/빌드 됨.
 
 ```
 /public/logo/global/logo.png
@@ -222,10 +229,11 @@ src/
 ## 진행률
 
 - [x] 기본 화면 구성 
+- [ ] 빌드 시 api cors 처리
 - [x] 개별 파일 빌드 처리
 - [x] 플러그인 형식 처리
-- [x] 역할 별 페이지 제어 처리
-- [ ] 업체 별 화면 처리
+- [x] 역할 별 페이지 제어 처리 ---> 1차 완료
+- [ ] 업체 별 화면 처리 ---> 2차 완료
 - [ ] 다른 기능 구상
 
 <style>
