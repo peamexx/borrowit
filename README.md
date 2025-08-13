@@ -1,6 +1,6 @@
 # borrow it
 
-[플러그인 형식 기능](#기능1), [개별 파일 빌드](#기능2), [역할 별 페이지 제어](#3)를 주 특징으로 한 포트폴리오 프로젝트 입니다.
+[플러그인 형식 기능](#기능1), [개별 파일 빌드](#기능2), [역할 별 페이지 제어](#기능3)를 주 특징으로 한 포트폴리오 입니다.
 
 ## 구성
 
@@ -115,6 +115,55 @@ return fs.existsSync(clientPath) ? clientPath : globalPath;
 
 (예: `어딘가에있는/google/logo.png`를 `public/logo.png`으로 옮겨 개발 시에도 이미지 파일을 볼 수 있음)
 
+## 기능3
+
+### 역할 별 페이지 제어
+
+다양한 계정에 따라 메뉴, 컴포넌트 등을 다르게 처리해야할 때가 있습니다.
+
+일반적인 role 기반 관리는 직책이 많을 경우 세밀한 관리가 불가능합니다.
+
+``` ts
+export const PERMISSIONS = {
+  BOOK_READ: 'BOOK_READ', // 도서 목록 권한
+  BOOK_EDIT: 'BOOK_EDIT', // 도서 생성/수정 권한
+  BOOK_DELETE: 'BOOK_DELETE' // 도서 삭제 권한
+};
+
+const admin = {
+  roleName: '전체 관리자',
+  permissions: ['BOOK_READ', 'BOOK_EDIT', 'BOOK_DELETE']
+}
+const user = {
+  roleName: '일반 회원',
+  permissions: ['BOOK_READ', 'BOOK_EDIT']
+}
+```
+
+위와 같이 `권한`으로 사용자를 분리하여 화면을 구상하였습니다.
+
+``` tsx
+// 라우터 src\routes\router.tsx
+const routes = [{
+  path: '/book/edit',
+  Components: <Guard key={PERMISSIONS.BOOK_EDIT}><Item /></Guard>
+}]
+
+// 특정 컴포넌트
+function Button() {
+  const enable = hasPermission(PERMISSIONS.BOOK_EDIT);
+  if (!enable) return null;
+
+  return <Button>버튼</Button>
+}
+```
+
+| 종류 | 내용 |
+| -- | -- |
+| 메뉴 | 메뉴 데이터에 써진 permissions으로 동적으로 새로운 메뉴 리스트 생성 |
+| 라우터 | 특정 페이지 접근을 막기 위해 Guard 컴포넌트로 활용하여 체크 |
+| 특정 컴포넌트 | 최초 진입 시 권한 체크 |
+
 ## 실행 방법
 
 0. [**최초**] `npm install`
@@ -154,12 +203,30 @@ src/
 
 ## 규칙
 
-1. 폴더 이름에 대시(-) 금지
+1. [필수] 폴더 이름에 대시(-) 금지
 
 ```
 /book-list # X
 /bookList # O
 ```
+
+2. [선택] public/logo 폴더 내 규칙에 맞게 `logo.png`라는 이름으로 파일 넣기
+
+- 없으면 기본 logo로 개발/빌드 됨.
+
+```
+/public/logo/global/logo.png
+/public/logo/clients/google/logo.png
+```
+
+## 진행률
+
+- [x] 기본 화면 구성 
+- [x] 개별 파일 빌드 처리
+- [x] 플러그인 형식 처리
+- [x] 역할 별 페이지 제어 처리
+- [ ] 업체 별 화면 처리
+- [ ] 다른 기능 구상
 
 <style>
   h1 {color: #09de53}
