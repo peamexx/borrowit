@@ -1,9 +1,0 @@
-{
-  "menu": [
-    {
-      "key": "book:list",
-      "label": "도서 목록",
-      "icon": "pi pi-fw pi-book"
-    }
-  ]
-}

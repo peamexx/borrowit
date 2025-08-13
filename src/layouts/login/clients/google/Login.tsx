@@ -17,6 +17,12 @@ function Login() {
 
   const [value, setValue] = useState({ id: 'admin-google' });
 
+  const handleKeyDown = (e: any) => {
+    if (e.code.toLowerCase() === 'enter') {
+      handleClick();
+    }
+  } 
+
   const handleClick = async () => {
     if (value.id === '') {
       alert('빈 칸을 채워주세요.');
@@ -41,10 +47,10 @@ function Login() {
       <div className={styles.inner}>
         <h2>업체A 로그인 페이지</h2>
         <FloatLabel>
-          <InputText id="id" value={value.id} onChange={(e) => setValue((prev) => ({ ...prev, id: e.target.value }))} />
+          <InputText id="id" value={value.id} onChange={(e) => setValue((prev) => ({ ...prev, id: e.target.value }))} onKeyDown={handleKeyDown} />
           <label htmlFor="id">아이디</label>
         </FloatLabel>
-        <Message text="아이디: admin-google" />
+        <Message text="관리자 계정은 admin-google, 유저는 user1-google을 입력해주세요." />
         <Button label="로그인" onClick={handleClick} />
       </div>
     </div>

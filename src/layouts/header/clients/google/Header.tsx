@@ -1,6 +1,7 @@
 
 
 import styles from './header.module.css';
+import '/src/assets/styles/common/clients/google/global.css';
 import { useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { Avatar } from 'primereact/avatar';
@@ -45,6 +46,7 @@ function Header() {
         services
       </div>
       <div className={styles.userWrap}>
+        {user?.roleName}
         <Avatar icon="pi pi-user" shape="circle" label={user?.id?.substring(0, 1) || ''} style={{ backgroundColor: '#2196F3', color: '#ffffff' }}></Avatar>
         <Button icon="pi pi-sign-out" rounded text severity="secondary" aria-label="로그아웃" onClick={handleConfirm} />
       </div>
