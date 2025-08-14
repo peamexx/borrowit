@@ -32,10 +32,6 @@ function PaperBookList(props: Props) {
 
   useEffect(() => {
     fetchBooks();
-  }, []);
-
-  useEffect(() => {
-    fetchBooks();
   }, [currentInfo]);
 
   const fetchBooks = async () => {
