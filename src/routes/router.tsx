@@ -6,6 +6,7 @@ import Main from '@layouts/main/Main'
 import BookList from '@layouts/bookList/BookList'
 import DueList from '@layouts/dueList/DueList'
 import DueListAllUsers from '@layouts/dueListAllUsers/DueListAllUsers'
+import Error404 from '@layouts/error/Error404'
 import { useAuthStore } from "@services/auth/userStore";
 import { PluginManagerProvider } from '@plugins/PluginProvider';
 import { PERMISSIONS } from '@data/menu/global/menuData';
@@ -65,5 +66,9 @@ export const router = createBrowserRouter([
   {
     path: "/login",
     Component: Login,
+  },
+    {
+    path: "*",
+    Component: Error404,
   },
 ]);

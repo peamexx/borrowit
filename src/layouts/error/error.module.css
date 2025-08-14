@@ -1,0 +1,23 @@
+.error {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.tc {
+  text-align: center;
+}
+
+.s404 {
+  display: block;
+  margin-bottom: 20px;
+  text-align: center;
+}
