@@ -3,7 +3,7 @@
   height: calc(100% - 1rem);
   margin-right: 1rem;
   background-color: #FFF;
-  background-image: url("./logo.png");
+  background-image: url("/logo.png");
   background-size: contain;
   background-position: 410px 100px;
   background-repeat: no-repeat;

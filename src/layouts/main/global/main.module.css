@@ -2,7 +2,7 @@
   width: calc(100% - 250px);
   height: 100%;
   background-color: #FFF;
-  background-image: url("./logo.png");
+  background-image: url("/logo.png");
   background-size: contain;
   background-position: 110px 100px;
   background-repeat: no-repeat;
