@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
   const CLIENT = ENV.VITE_CLIENT || 'default';
 
   console.log(`✅ ENV: ${CLIENT}`);
-  
+
   copyLogoPlugin(CLIENT, 'DEV');
 
   return {
@@ -31,14 +31,19 @@ export default defineConfig(({ mode }) => {
         { find: "@utils", replacement: path.resolve(__dirname, "./src/utils") },
       ],
     },
-    server: {
-      proxy: {
-        '/aladin': {
-          target: ENV.VITE_ALADIN_URL,
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/aladin/, ''), // '/aladin' 제거
-        },
-      },
-    },
+    // server: {
+    //   proxy: {
+    //     '/aladin': {
+    //       target: ENV.VITE_ALADIN_URL,
+    //       changeOrigin: true,
+    //       rewrite: (path) => path.replace(/^\/aladin/, ''), // '/aladin' 제거
+    //     },
+    //   },
+    // },
+    // build: {
+    //   rollupOptions: {
+    //     external: ['/server/**']
+    //   }
+    // }
   }
 })

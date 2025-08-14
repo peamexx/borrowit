@@ -42,12 +42,7 @@ function PaperBookList(props: Props) {
     try {
       setLoading(true);
 
-      const res = await fetch(`/aladin/${import.meta.env.VITE_ALADIN_BOOKLIST_PATH}?ttbkey=${import.meta.env.VITE_ALADIN_TTBKEY}&QueryType=ItemNewAll&SearchTarget=${TARGET}&MaxResults=${currentInfo.per}&output=js&Version=20131101`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const res = await fetch(`${import.meta.env.VITE_API_SERVER}/aladin?MaxResults=${currentInfo.per}&SearchTarget=${TARGET}`, { method: 'GET' });
       if (res) {
         const list = await res.json();
         setData(list.item);
