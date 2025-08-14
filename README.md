@@ -203,11 +203,10 @@ function Button() {
 1. [**필수**] `.env` 파일 추가
 
 ```
-# 기본
+# 빈칸 또는 google
 VITE_CLIENT=
 
-# google 업체
-VITE_CLIENT=google
+VITE_API_SERVER=http://localhost:4000
 ```
 
 2. `npm run dev`
