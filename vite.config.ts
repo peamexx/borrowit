@@ -18,9 +18,9 @@ export default defineConfig(({ mode }) => {
       createAutoLayoutPlugin(CLIENT),
       copyLogoPlugin(CLIENT, 'BUILD'),
     ],
-    define: {
-      __CLIENT__: JSON.stringify(ENV.VITE_CLIENT) || 'defalut'
-    },
+    // define: {
+    //   __CLIENT__: JSON.stringify(ENV.VITE_CLIENT) || 'defalut'
+    // },
     resolve: {
       alias: [
         { find: "@components", replacement: path.resolve(__dirname, "./src/components") },
