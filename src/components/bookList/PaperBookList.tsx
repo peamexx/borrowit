@@ -1,11 +1,16 @@
 import styles from './bookList.module.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import type { DataTableProps } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Dropdown } from 'primereact/dropdown';
+import { Button } from 'primereact/button';
+import { confirmDialog } from 'primereact/confirmdialog';
+import { Toast } from 'primereact/toast';
 
 import { usePluginManager, type PluginType } from '@plugins/PluginProvider';
+import { getApi, API_KEY } from '@services/api/api';
+import { useAuthStore } from '@services/auth/userStore';
 
 interface Book {
   id: number;
@@ -25,10 +30,12 @@ const DROPDOWN_RANGE = [
 ];
 
 function PaperBookList(props: Props) {
+  const { user } = useAuthStore();
   const { openPlugins } = usePluginManager();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentInfo, setCurrentInfo] = useState({ page: 1, per: 10 });
+  const toast = useRef<any>(null); //todo 공통화
 
   useEffect(() => {
     fetchBooks();
@@ -47,6 +54,15 @@ function PaperBookList(props: Props) {
     } catch (error) {
       console.debug(error);
       setLoading(false);
+    }
+  }
+
+  const handleBorrowBook = async (book: any) => {
+    const res = await getApi(API_KEY.CREATE_BORROW_BOOK, { title: book.title, itemId: book.itemId, user: user });
+    if (res.success) {
+      toast.current?.show({ severity: 'success', summary: '성공', detail: '도서를 대출하였습니다.' });
+    } else {
+      toast.current?.show({ severity: 'error', summary: '실패', detail: '도서 대출에 실패하였습니다.' });
     }
   }
 
@@ -92,6 +108,18 @@ function PaperBookList(props: Props) {
     return book.priceSales.toLocaleString();
   }
 
+  const handleBorrowButton = (book: any) => {
+    return <Button size='small' label="대출하기" onClick={() => {
+      confirmDialog({
+        message: <div className={styles.row1}>해당 도서를 대여하시겠습니까?<br /><div className={styles.row2}>도서명: <span className={styles.point}>{book.title}</span></div></div>,
+        header: '대출하기',
+        defaultFocus: 'accept',
+        accept: () => handleBorrowBook(book),
+        reject: () => { }
+      });
+    }} />
+  }
+
   return (<>
     <DataTable className="unset-overflow" value={data} size="small" cellSelection selectionMode="single" header={headerComponents} loading={loading} {...props.tableProps}
       onCellClick={handleCellClick}>
@@ -100,7 +128,9 @@ function PaperBookList(props: Props) {
       <Column key="publisher" field="publisher" header="출판사" />
       <Column key="priceStandard" field="priceStandard" header="정가" body={handlePriceStandard} />
       <Column key="priceSales" field="priceSales" header="판매가" body={handlePriceSales} />
+      <Column key="etc" field="etc" header="대출 버튼" body={handleBorrowButton} />
     </DataTable>
+    <Toast ref={toast} />
   </>)
 }
 
