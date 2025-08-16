@@ -1,4 +1,3 @@
-import styles from './dueMovieList.module.css';
 import { useEffect, useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import type { DataTableProps } from 'primereact/datatable';
@@ -18,7 +17,7 @@ interface Props {
   plugins?: PluginType[];
 }
 
-function DueMovieList(_props: Props) {
+function DueBookListAllUsers(_props: Props) {
   const { user } = useAuthStore();
   const [data, setData] = useState<any>([]);
   const [loading, setLoading] = useState(false);
@@ -33,9 +32,9 @@ function DueMovieList(_props: Props) {
     try {
       setLoading(true);
 
-      const list = await getApi(API_KEY.GET_DUELIST, user);
-      if (list) {
-        setData(list);
+      const list = await getApi(API_KEY.GET_DUELIST_ALL_USERS, user);
+      if (list.success) {
+        setData(list.data);
         setLoading(false);
       }
     } catch (error) {
@@ -47,18 +46,13 @@ function DueMovieList(_props: Props) {
   }
 
   const handleDday = (data: any) => {
-    if (data.dday === "0") return '오늘';
-
-    if (data.dday.includes('+')) {
-      return <span className={styles.red}>{`${data.dday.substring(1, data.dday.length)}일 지남`}</span>
-    } else {
-      return <span>{`${data.dday.substring(1, data.dday.length)}일 남음`}</span>
-    }
+    return `${data.dday.substring(1, data.dday.length)}일 지남`;
   }
 
   return (<>
     <DataTable className="unset-overflow" value={data} loading={loading} size="small" cellSelection selectionMode="single">
       <Column key="movieName" field="movieName" header="영화 이름" />
+      <Column key="username" field="username" header="사용자" />
       <Column key="createDate" field="createDate" header="대출 시작일" />
       <Column key="endDate" field="endDate" header="대출 종료일" />
       <Column key="dday" field="dday" header="남은 일" body={handleDday} />
@@ -66,4 +60,4 @@ function DueMovieList(_props: Props) {
   </>)
 }
 
-export default DueMovieList;
+export default DueBookListAllUsers;

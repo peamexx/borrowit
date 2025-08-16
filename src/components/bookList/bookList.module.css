@@ -1,6 +1,47 @@
-.flexEnd10 {
+.flexHeader {
+  display: flex;
+  align-items: center;
+}
+
+.fhrow1 {
+  flex: 1;
+}
+
+.fhrow2 {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
+}
+
+.mb10 {
+  margin-bottom: 10px;
+}
+
+.point {
+  font-weight: 600;
+}
+
+.row1 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.row2 {
+  display: flex;
+  gap: 10px;
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.borrowButton {
+  min-width: 95px;
 }
