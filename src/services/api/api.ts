@@ -78,7 +78,6 @@ export const getDueListUser = async (user: User) => {
     }
     return { success: true, data: returnArr };
   } catch (error) {
-    console.debug('error', error);
     return { success: false, code: 'ERROR', data: error };
   }
 }
@@ -103,7 +102,7 @@ export const getDueListAllUsers = async (user: User) => {
     let returnArr = [];
     for (const item of dueSnapshot.docs) {
       const d = item.data();
-      const memberSnap = await getDoc(doc(db, "member_master", d.memberRef.id));
+      const memberSnap = await getDoc(doc(db, COLLECTION_KEY.MEMBER_MASTER, d.memberRef.id));
       returnArr.push(({
         ...d,
         username: memberSnap.exists() ? memberSnap.data().username : '',
@@ -112,7 +111,6 @@ export const getDueListAllUsers = async (user: User) => {
     }
     return { success: true, data: returnArr };
   } catch (error) {
-    console.debug('error', error);
     return { success: false, code: 'ERROR', data: error };
   }
 }
@@ -152,7 +150,6 @@ export const createBorrowBook = async ({ title, itemId, user }: CreateBorrowBook
     }
     return { success: false }
   } catch (error) {
-    console.debug('error', error);
     return { success: false, code: 'ERROR', data: error };
   }
 }
@@ -191,7 +188,6 @@ export const checkIsBookBorrowed = async ({ bookArr, user }: CheckIsBookBorrowed
     }));
     return { success: true, data: resultArr };
   } catch (error) {
-    console.debug('error', error);
     return { success: false, code: 'ERROR', data: error };
   }
 }
@@ -210,7 +206,7 @@ export const getMessageToAdminList = async (user: User): Promise<ApiType> => {
     let returnArr = [];
     for (const item of querySnapshot.docs) {
       const d = item.data();
-      const memberSnap = await getDoc(doc(db, "member_master", d.memberRef.id));
+      const memberSnap = await getDoc(doc(db, COLLECTION_KEY.MEMBER_MASTER, d.memberRef.id));
       returnArr.push(({
         ...d,
         username: memberSnap.exists() ? memberSnap.data().username : '',
@@ -218,7 +214,6 @@ export const getMessageToAdminList = async (user: User): Promise<ApiType> => {
     }
     return { success: true, data: returnArr };
   } catch (error) {
-    console.debug('error', error);
     return { success: false, code: 'ERROR', data: error };
   }
 }
@@ -244,7 +239,6 @@ export const createMessageToAdminItem = async ({ message, user }: CreateMessageT
     }
     return { success: false }
   } catch (error) {
-    console.debug('error', error);
     return { success: false, code: 'ERROR', data: error };
   }
 }
