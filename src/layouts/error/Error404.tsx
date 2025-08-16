@@ -3,7 +3,11 @@ import styles from './error.module.css';
 import { Button } from 'primereact/button';
 import { useNavigate } from 'react-router';
 
+import { useTitle } from '@services/title/useTitle';
+
 function Menu() {
+  useTitle();
+
   const navigate = useNavigate();
 
   return (
