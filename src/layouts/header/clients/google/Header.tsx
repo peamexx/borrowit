@@ -2,19 +2,16 @@
 
 import styles from './header.module.css';
 import '/src/assets/styles/common/clients/google/global.css';
-import { useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { Avatar } from 'primereact/avatar';
 import { Button } from 'primereact/button';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
-import { Toast } from 'primereact/toast';
 
 import { useAuthStore } from '@services/auth/userStore';
 
 function Header() {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
-  const toast = useRef(null);
 
   const handleConfirm = () => {
     confirmDialog({
@@ -38,7 +35,6 @@ function Header() {
   }
   return (
     <div className={styles.header}>
-      <Toast ref={toast} />
       <ConfirmDialog />
       {/* <Button icon="pi pi-cog" rounded text severity="secondary" aria-label="설정" /> */}
       <div className={styles.logo} onClick={() => navigate('/')} title="처음으로">

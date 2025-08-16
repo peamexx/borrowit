@@ -9,6 +9,7 @@ import { Dialog } from 'primereact/dialog';
 import { useAuthStore } from '@services/auth/userStore';
 import { PERMISSIONS } from '@data/menu/global/menuData';
 import { API_KEY, getApi } from '@services/api/api';
+import { useToast } from '@services/toast/ToastProvider';
 
 function SendMessageButton() {
   const { hasPermissions } = useAuthStore();
@@ -16,18 +17,20 @@ function SendMessageButton() {
   if (!enable) return null;
 
   const { user } = useAuthStore();
+  const { openToast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [value, setValue] = useState('');
 
   const handleMessage = async () => {
     const res = await getApi(API_KEY.CREATE_MESSAGE_TO_ADMIN_LIST, { message: value, user: user });
     if (res.success) {
-      //todo 공통
-      // toast.current?.show({ severity: 'success', summary: '성공', detail: '도서를 대출하였습니다.' });
+      openToast({ severity: 'success', summary: '성공', detail: '메세지를 관리자에게 전송하였습니다.' });
+
       setValue('');
       setIsOpen(false);
     } else {
-      // toast.current?.show({ severity: 'error', summary: '실패', detail: '도서 대출에 실패하였습니다.' });
+      openToast({ severity: 'error', summary: '실패', detail: '메세지 전송에 실패하였습니다.' });
+
       setIsOpen(false);
     }
   }
