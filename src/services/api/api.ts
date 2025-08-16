@@ -7,6 +7,7 @@ export const API_KEY = {
   GET_DUELIST: 'GET_DUELIST',
   GET_DUELIST_ALL_USERS: 'GET_DUELIST_ALL_USERS',
   CREATE_BORROW_BOOK: 'CREATE_BORROW_BOOK',
+  CHECK_IS_BOOK_BORROWED: 'CHECK_IS_BOOK_BORROWED',
 }
 
 export interface ApiType {
@@ -31,6 +32,10 @@ export const getApi = async (key: string, options: any = {}, timeout = 3000) => 
       break;
     case 'CREATE_BORROW_BOOK':
       fetchPromise = createBorrowBook({ ...options });
+      break;
+    case 'CHECK_IS_BOOK_BORROWED':
+      fetchPromise = checkIsBookBorrowed({ ...options });
+      break;
   }
 
   //@ts-ignore
@@ -129,6 +134,37 @@ export const createBorrowBook = async ({ title, itemId, user }: CreateBorrowBook
       return { success: true };
     }
     return { success: false }
+  } catch (error) {
+    console.debug('error', error);
+    return { success: false, code: 'ERROR', data: error };
+  }
+}
+
+export const checkIsBookBorrowed = async ({ bookArr }: any) => {
+  try {
+    const itemIds = bookArr.map((i: any) => i.itemId);
+
+    // 파이어베이스에서 in쿼리 쓰려면 10개씩 나눠야함.
+    const chunks = [];
+    for (let i = 0; i < itemIds.length; i += 10) {
+      chunks.push(itemIds.slice(i, i + 10));
+    }
+
+    const borrowSet = new Set();
+    for (const chunk of chunks) {
+      const q = query(collection(db, "due_master"), where("itemId", "in", chunk));
+      const querySnapshot = await getDocs(q);
+
+      querySnapshot.forEach((doc) => {
+        borrowSet.add(doc.data().itemId);
+      });
+    }
+
+    const resultArr = bookArr.map((item: any) => ({
+      itemId: item.itemId,
+      isBorrowed: borrowSet.has(item.itemId),
+    }));
+    return { success: true, data: resultArr };
   } catch (error) {
     console.debug('error', error);
     return { success: false, code: 'ERROR', data: error };
