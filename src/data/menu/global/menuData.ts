@@ -18,7 +18,8 @@ export interface MenuListType {
 export const PERMISSIONS = {
   OVERDUE_READ: 'OVERDUE_READ',
   MOVIE_ADD: 'MOVIE_ADD',
-  ALERT_SEND: 'ALERT_SEND'
+  ALERT_SEND: 'ALERT_SEND',
+  SEND_MESSAGE_TO_ADMIN: 'SEND_MESSAGE_TO_ADMIN'
 };
 
 export const menuData = [
