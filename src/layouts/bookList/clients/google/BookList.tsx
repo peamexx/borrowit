@@ -18,7 +18,7 @@ function BookList() {
       <Divider className="mt50 mb50" />
       <Message className="mb20" severity="info" text="플러그인이 추가되지 않은 목록입니다." />
       <PaperBookList
-        tableProps={{ stripedRows: true, paginator: true, rows: 1 }}
+        tableProps={{ stripedRows: true, paginator: true, rows: 5 }}
       />
     </div>
   )
