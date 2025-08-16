@@ -51,7 +51,7 @@ function PaperBookList(props: Props) {
       const res = await fetch(`${import.meta.env.VITE_API_SERVER}/aladin?Start=${currentInfo.page}&MaxResults=${currentInfo.pagePer}&SearchTarget=${TARGET}`, { method: 'GET' });
       if (res) {
         const list = await res.json();
-        const borrowStatusArr = await getApi(API_KEY.CHECK_IS_BOOK_BORROWED, { bookArr: list.item });
+        const borrowStatusArr = await getApi(API_KEY.CHECK_IS_BOOK_BORROWED, { bookArr: list.item, user: user });
 
         if (borrowStatusArr.success) {
           const finalData = list.item.map((item: any) => ({ ...item, isBorrowed: borrowStatusArr.data?.filter((b: any) => b.itemId === item.itemId)?.[0].isBorrowed }))

@@ -17,6 +17,7 @@ export interface ApiType {
   message?: string;
 }
 
+//todo 쓰는법 통일
 export const getApi = async (key: string, options: any = {}, timeout = 3000) => {
   const timeoutPromise: Promise<ApiType> = new Promise((_, reject) => {
     return setTimeout(() => reject({ success: false, code: 'TIMEOUT' }), timeout);
@@ -142,7 +143,11 @@ export const createBorrowBook = async ({ title, itemId, user }: CreateBorrowBook
   }
 }
 
-export const checkIsBookBorrowed = async ({ bookArr }: any) => {
+interface CheckIsBookBorrowedType {
+  bookArr: any[];
+  user: User
+}
+export const checkIsBookBorrowed = async ({ bookArr, user }: CheckIsBookBorrowedType) => {
   try {
     const itemIds = bookArr.map((i: any) => i.itemId);
 
@@ -154,8 +159,12 @@ export const checkIsBookBorrowed = async ({ bookArr }: any) => {
 
     const borrowSet = new Set();
     for (const chunk of chunks) {
-      const q = query(collection(db, "due_master"), where("itemId", "in", chunk));
-      const querySnapshot = await getDocs(q);
+      const dueQuery = query(
+        collection(db, "due_master"),
+        where("itemId", "in", chunk),
+        where("memberRef", "==", doc(db, user.userRefStr))
+      );
+      const querySnapshot = await getDocs(dueQuery);
 
       querySnapshot.forEach((doc) => {
         borrowSet.add(doc.data().itemId);
