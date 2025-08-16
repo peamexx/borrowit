@@ -1,7 +1,6 @@
 import styles from './dueBookList.module.css';
 import { useEffect, useState } from 'react';
-import { DataTable } from 'primereact/datatable';
-import type { DataTableProps } from 'primereact/datatable';
+import { DataTable, type DataTableProps } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 
 import { type PluginType } from '@plugins/PluginProvider';
