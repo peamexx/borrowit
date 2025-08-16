@@ -1,4 +1,4 @@
-import { doc, collection, query, where, getDocs, addDoc } from "firebase/firestore";
+import { doc, collection, query, where, getDocs, getDoc, addDoc } from "firebase/firestore";
 
 import { db } from "@services/firebase/firebase";
 import type { User } from "@services/auth/userStore";
@@ -88,8 +88,10 @@ export const getDueListAllUsers = async (user: User) => {
     let returnArr = [];
     for (const item of dueSnapshot.docs) {
       const d = item.data();
+      const memberSnap = await getDoc(doc(db, "member_master", d.memberRef.id));
       returnArr.push(({
         ...d,
+        username: memberSnap.exists() ? memberSnap.data().username : '',
         dday: _getDday(d.endDate)
       }));
     }
