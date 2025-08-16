@@ -50,7 +50,8 @@ function DueBookListAllUsers(_props: Props) {
   }
 
   return (<>
-    <DataTable className="unset-overflow" value={data} loading={loading} size="small" cellSelection selectionMode="single">
+    <DataTable className="unset-overflow" value={data} loading={loading} size="small" cellSelection selectionMode="single"
+      emptyMessage="연체한 사용자가 없습니다.">
       <Column key="movieName" field="movieName" header="영화 이름" />
       <Column key="username" field="username" header="사용자" />
       <Column key="createDate" field="createDate" header="대출 시작일" />
