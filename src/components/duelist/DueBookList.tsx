@@ -1,7 +1,6 @@
 import styles from './dueBookList.module.css';
 import { useEffect, useState } from 'react';
-import { DataTable } from 'primereact/datatable';
-import type { DataTableProps } from 'primereact/datatable';
+import { DataTable, type DataTableProps } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 
 import { type PluginType } from '@plugins/PluginProvider';
@@ -57,7 +56,8 @@ function DueBookList(_props: Props) {
   }
 
   return (<>
-    <DataTable className="unset-overflow" value={data} loading={loading} size="small" cellSelection selectionMode="single">
+    <DataTable className="unset-overflow" value={data} loading={loading} size="small" cellSelection selectionMode="single"
+      emptyMessage="대출 내역이 없습니다.">
       <Column key="title" field="title" header="책 이름" />
       <Column key="createDate" field="createDate" header="대출 시작일" />
       <Column key="endDate" field="endDate" header="대출 종료일" />
