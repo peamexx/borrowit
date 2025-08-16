@@ -1,0 +1,12 @@
+.flex10 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.textarea {
+  width: 100%;
+  margin-bottom: 20px;
+  resize: none;
+}

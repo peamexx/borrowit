@@ -8,12 +8,15 @@ export const API_KEY = {
   GET_DUELIST_ALL_USERS: 'GET_DUELIST_ALL_USERS',
   CREATE_BORROW_BOOK: 'CREATE_BORROW_BOOK',
   CHECK_IS_BOOK_BORROWED: 'CHECK_IS_BOOK_BORROWED',
+  GET_MESSAGE_TO_ADMIN_LIST: 'GET_MESSAGE_TO_ADMIN_LIST',
+  CREATE_MESSAGE_TO_ADMIN_LIST: 'CREATE_MESSAGE_TO_ADMIN_LIST',
 }
 
 export const COLLECTION_KEY = {
   COMPANY_MASTER: 'company_master',
   MEMBER_MASTER: 'member_master',
   DUE_MASTER: 'due_master',
+  BEGGING_MASTER: 'begging_master',
 }
 
 export interface ApiType {
@@ -41,6 +44,12 @@ export const getApi = async (key: string, options: any = {}, timeout = 3000) => 
       break;
     case 'CHECK_IS_BOOK_BORROWED':
       fetchPromise = checkIsBookBorrowed({ ...options });
+      break;
+    case 'GET_MESSAGE_TO_ADMIN_LIST':
+      fetchPromise = getMessageToAdminList({ ...options });
+      break;
+    case 'CREATE_MESSAGE_TO_ADMIN_LIST':
+      fetchPromise = createMessageToAdminItem({ ...options });
       break;
   }
 
@@ -181,6 +190,59 @@ export const checkIsBookBorrowed = async ({ bookArr, user }: CheckIsBookBorrowed
       isBorrowed: borrowSet.has(item.itemId),
     }));
     return { success: true, data: resultArr };
+  } catch (error) {
+    console.debug('error', error);
+    return { success: false, code: 'ERROR', data: error };
+  }
+}
+
+export const getMessageToAdminList = async (user: User): Promise<ApiType> => {
+  try {
+    const q = query(
+      collection(db, COLLECTION_KEY.BEGGING_MASTER),
+      where("companyRef", "==", doc(db, user.companyRefStr)),
+    );
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+      return { success: false, code: 'EMPTY', message: '데이터 없음.' };
+    }
+
+    let returnArr = [];
+    for (const item of querySnapshot.docs) {
+      const d = item.data();
+      const memberSnap = await getDoc(doc(db, "member_master", d.memberRef.id));
+      returnArr.push(({
+        ...d,
+        username: memberSnap.exists() ? memberSnap.data().username : '',
+      }));
+    }
+    return { success: true, data: returnArr };
+  } catch (error) {
+    console.debug('error', error);
+    return { success: false, code: 'ERROR', data: error };
+  }
+}
+
+interface CreateMessageToAdminItemType {
+  message: string;
+  user: User
+}
+export const createMessageToAdminItem = async ({ message, user }: CreateMessageToAdminItemType): Promise<ApiType> => {
+  try {
+    const today = new Date();
+    let endDay = new Date(today);
+    endDay.setDate(today.getDate() + 10);
+
+    const res = await addDoc(collection(db, COLLECTION_KEY.BEGGING_MASTER), {
+      message: message,
+      memberRef: doc(db, user.memberRefStr),
+      companyRef: doc(db, user.companyRefStr),
+      createDate: today.toISOString().split('T')[0],
+    });
+    if (res) {
+      return { success: true };
+    }
+    return { success: false }
   } catch (error) {
     console.debug('error', error);
     return { success: false, code: 'ERROR', data: error };
