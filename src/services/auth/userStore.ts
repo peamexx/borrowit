@@ -1,9 +1,9 @@
 import { create } from 'zustand';
-import { persist } from "zustand/middleware";
+import { persist } from 'zustand/middleware';
 import { doLogin, doLogout } from '@services/auth/login';
 
 export type User = {
-  userRefStr: string;
+  memberRefStr: string;
   username: string;
   id: string;
   companyRefStr: string;
@@ -31,15 +31,17 @@ export const useAuthStore = create<AuthState>()(
 
       login: async (formData) => {
         try {
-          const userData = await doLogin(formData);
-          if (userData) {
-            set({ user: userData ?? null, });
-            return { success: true, user: userData };
+          const res = await doLogin(formData);
+          if (res.success) {
+            set({ user: res.data ?? null, });
+            return { success: true, user: res.data };
           } else {
-            return { success: false, message: 'No User' };
+            console.debug(res);
+            return { success: false };
           }
         } catch (err: any) {
-          return { success: false, message: 'Login Fail' };
+          console.debug(err);
+          return { success: false };
         }
       },
 

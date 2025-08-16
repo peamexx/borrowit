@@ -1,13 +1,22 @@
-import { doc, collection, query, where, getDocs, getDoc, addDoc } from "firebase/firestore";
+import { doc, collection, query, where, getDocs, getDoc, addDoc } from 'firebase/firestore';
 
-import { db } from "@services/firebase/firebase";
-import type { User } from "@services/auth/userStore";
+import { db } from '@services/firebase/firebase';
+import type { User } from '@services/auth/userStore';
 
 export const API_KEY = {
   GET_DUELIST: 'GET_DUELIST',
   GET_DUELIST_ALL_USERS: 'GET_DUELIST_ALL_USERS',
   CREATE_BORROW_BOOK: 'CREATE_BORROW_BOOK',
   CHECK_IS_BOOK_BORROWED: 'CHECK_IS_BOOK_BORROWED',
+  GET_MESSAGE_TO_ADMIN_LIST: 'GET_MESSAGE_TO_ADMIN_LIST',
+  CREATE_MESSAGE_TO_ADMIN_LIST: 'CREATE_MESSAGE_TO_ADMIN_LIST',
+}
+
+export const COLLECTION_KEY = {
+  COMPANY_MASTER: 'company_master',
+  MEMBER_MASTER: 'member_master',
+  DUE_MASTER: 'due_master',
+  BEGGING_MASTER: 'begging_master',
 }
 
 export interface ApiType {
@@ -17,7 +26,6 @@ export interface ApiType {
   message?: string;
 }
 
-//todo 쓰는법 통일
 export const getApi = async (key: string, options: any = {}, timeout = 3000) => {
   const timeoutPromise: Promise<ApiType> = new Promise((_, reject) => {
     return setTimeout(() => reject({ success: false, code: 'TIMEOUT' }), timeout);
@@ -37,6 +45,12 @@ export const getApi = async (key: string, options: any = {}, timeout = 3000) => 
     case 'CHECK_IS_BOOK_BORROWED':
       fetchPromise = checkIsBookBorrowed({ ...options });
       break;
+    case 'GET_MESSAGE_TO_ADMIN_LIST':
+      fetchPromise = getMessageToAdminList({ ...options });
+      break;
+    case 'CREATE_MESSAGE_TO_ADMIN_LIST':
+      fetchPromise = createMessageToAdminItem({ ...options });
+      break;
   }
 
   //@ts-ignore
@@ -46,12 +60,12 @@ export const getApi = async (key: string, options: any = {}, timeout = 3000) => 
 export const getDueListUser = async (user: User) => {
   try {
     const dueQuery = query(
-      collection(db, "due_master"),
-      where("memberRef", "==", doc(db, user.userRefStr)),
+      collection(db, COLLECTION_KEY.DUE_MASTER),
+      where("memberRef", "==", doc(db, user.memberRefStr)),
     );
     const dueSnapshot = await getDocs(dueQuery);
     if (dueSnapshot.empty) {
-      return { success: true, code: "EMPTY", data: [], message: `대출 목록에 해당 user의 데이터가 없음.` };
+      return { success: true, code: 'EMPTY', data: [], message: `대출 목록에 해당 user의 데이터가 없음.` };
     }
 
     let returnArr = [];
@@ -64,7 +78,6 @@ export const getDueListUser = async (user: User) => {
     }
     return { success: true, data: returnArr };
   } catch (error) {
-    console.debug('error', error);
     return { success: false, code: 'ERROR', data: error };
   }
 }
@@ -74,22 +87,22 @@ export const getDueListAllUsers = async (user: User) => {
     // 1. 오늘 날짜 이후 데이터 조회
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const todayStr = today.toISOString().slice(0, 10); // ex. "2025-08-13"
+    const todayStr = today.toISOString().slice(0, 10); // ex. 2025-08-13
 
     const dueQuery = query(
-      collection(db, "due_master"),
+      collection(db, COLLECTION_KEY.DUE_MASTER),
       where("companyRef", "==", doc(db, user.companyRefStr)),
       where("endDate", "<", todayStr),
     );
     const dueSnapshot = await getDocs(dueQuery);
     if (dueSnapshot.empty) {
-      return { success: true, code: "EMPTY", data: [], message: `데이터 없음.` };
+      return { success: true, code: 'EMPTY', data: [], message: `데이터 없음.` };
     }
 
     let returnArr = [];
     for (const item of dueSnapshot.docs) {
       const d = item.data();
-      const memberSnap = await getDoc(doc(db, "member_master", d.memberRef.id));
+      const memberSnap = await getDoc(doc(db, COLLECTION_KEY.MEMBER_MASTER, d.memberRef.id));
       returnArr.push(({
         ...d,
         username: memberSnap.exists() ? memberSnap.data().username : '',
@@ -98,7 +111,6 @@ export const getDueListAllUsers = async (user: User) => {
     }
     return { success: true, data: returnArr };
   } catch (error) {
-    console.debug('error', error);
     return { success: false, code: 'ERROR', data: error };
   }
 }
@@ -111,25 +123,25 @@ interface CreateBorrowBookType {
 export const createBorrowBook = async ({ title, itemId, user }: CreateBorrowBookType): Promise<ApiType> => {
   try {
     // 1. 중복 체크
-    const list = collection(db, "due_master");
-    const q = query(list, where("itemId", "==", itemId));
+    const q = query(
+      collection(db, COLLECTION_KEY.DUE_MASTER),
+      where("itemId", "==", itemId)
+    );
     const querySnapshot = await getDocs(q);
     if (!querySnapshot.empty) {
-      return { success: false, code: "DUPLICATE", message: `itemId ${itemId} 이미 존재함.` };
+      return { success: false, code: 'DUPLICATE', message: `itemId ${itemId} 이미 존재함.` };
     }
 
     // 2. 저장
-    const memberRef = doc(db, user.userRefStr);
-    const companyRef = doc(db, user.companyRefStr);
     const today = new Date();
     let endDay = new Date(today);
     endDay.setDate(today.getDate() + 10);
 
-    const res = await addDoc(collection(db, "due_master"), {
+    const res = await addDoc(collection(db, COLLECTION_KEY.DUE_MASTER), {
       title: title,
       itemId: itemId,
-      memberRef: memberRef,
-      companyRef: companyRef,
+      memberRef: doc(db, user.memberRefStr),
+      companyRef: doc(db, user.companyRefStr),
       createDate: today.toISOString().split('T')[0],
       endDate: endDay.toISOString().split('T')[0],
     });
@@ -138,7 +150,6 @@ export const createBorrowBook = async ({ title, itemId, user }: CreateBorrowBook
     }
     return { success: false }
   } catch (error) {
-    console.debug('error', error);
     return { success: false, code: 'ERROR', data: error };
   }
 }
@@ -160,9 +171,9 @@ export const checkIsBookBorrowed = async ({ bookArr, user }: CheckIsBookBorrowed
     const borrowSet = new Set();
     for (const chunk of chunks) {
       const dueQuery = query(
-        collection(db, "due_master"),
+        collection(db, COLLECTION_KEY.DUE_MASTER),
         where("itemId", "in", chunk),
-        where("memberRef", "==", doc(db, user.userRefStr))
+        where("memberRef", "==", doc(db, user.memberRefStr))
       );
       const querySnapshot = await getDocs(dueQuery);
 
@@ -177,14 +188,64 @@ export const checkIsBookBorrowed = async ({ bookArr, user }: CheckIsBookBorrowed
     }));
     return { success: true, data: resultArr };
   } catch (error) {
-    console.debug('error', error);
+    return { success: false, code: 'ERROR', data: error };
+  }
+}
+
+export const getMessageToAdminList = async (user: User): Promise<ApiType> => {
+  try {
+    const q = query(
+      collection(db, COLLECTION_KEY.BEGGING_MASTER),
+      where("companyRef", "==", doc(db, user.companyRefStr)),
+    );
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+      return { success: false, code: 'EMPTY', message: '데이터 없음.' };
+    }
+
+    let returnArr = [];
+    for (const item of querySnapshot.docs) {
+      const d = item.data();
+      const memberSnap = await getDoc(doc(db, COLLECTION_KEY.MEMBER_MASTER, d.memberRef.id));
+      returnArr.push(({
+        ...d,
+        username: memberSnap.exists() ? memberSnap.data().username : '',
+      }));
+    }
+    return { success: true, data: returnArr };
+  } catch (error) {
+    return { success: false, code: 'ERROR', data: error };
+  }
+}
+
+interface CreateMessageToAdminItemType {
+  message: string;
+  user: User
+}
+export const createMessageToAdminItem = async ({ message, user }: CreateMessageToAdminItemType): Promise<ApiType> => {
+  try {
+    const today = new Date();
+    let endDay = new Date(today);
+    endDay.setDate(today.getDate() + 10);
+
+    const res = await addDoc(collection(db, COLLECTION_KEY.BEGGING_MASTER), {
+      message: message,
+      memberRef: doc(db, user.memberRefStr),
+      companyRef: doc(db, user.companyRefStr),
+      createDate: today.toISOString().split('T')[0],
+    });
+    if (res) {
+      return { success: true };
+    }
+    return { success: false }
+  } catch (error) {
     return { success: false, code: 'ERROR', data: error };
   }
 }
 
 function _getDday(targetDateStr: string): string {
   const today = new Date();
-  const [year, month, day] = targetDateStr.split("-").map(Number);
+  const [year, month, day] = targetDateStr.split('-').map(Number);
   const target = new Date(year, month - 1, day); // 로컬 타임 기준
 
   today.setHours(0, 0, 0, 0);
