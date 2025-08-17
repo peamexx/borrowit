@@ -1,4 +1,4 @@
-import { doc, collection, query, where, getDocs, getDoc, addDoc } from 'firebase/firestore';
+import { doc, collection, query, where, getDocs, getDoc, addDoc, updateDoc } from 'firebase/firestore';
 
 import { db } from '@services/firebase/firebase';
 import type { User } from '@services/auth/userStore';
@@ -10,6 +10,7 @@ export const API_KEY = {
   CHECK_IS_BOOK_BORROWED: 'CHECK_IS_BOOK_BORROWED',
   GET_MESSAGE_TO_ADMIN_LIST: 'GET_MESSAGE_TO_ADMIN_LIST',
   CREATE_MESSAGE_TO_ADMIN_LIST: 'CREATE_MESSAGE_TO_ADMIN_LIST',
+  UPDATE_RETURN_BOOK: 'UPDATE_RETURN_BOOK',
 }
 
 export const COLLECTION_KEY = {
@@ -51,6 +52,9 @@ export const getApi = async (key: string, options: any = {}, timeout = 3000) => 
     case 'CREATE_MESSAGE_TO_ADMIN_LIST':
       fetchPromise = createMessageToAdminItem({ ...options });
       break;
+    case 'UPDATE_RETURN_BOOK':
+      fetchPromise = updateReturnBook({ ...options });
+      break;
   }
 
   //@ts-ignore
@@ -73,6 +77,7 @@ export const getDueListUser = async (user: User) => {
       const d = item.data();
       returnArr.push(({
         ...d,
+        id: item.id,
         dday: _getDday(d.endDate)
       }));
     }
@@ -144,6 +149,8 @@ export const createBorrowBook = async ({ title, itemId, user }: CreateBorrowBook
       companyRef: doc(db, user.companyRefStr),
       createDate: today.toISOString().split('T')[0],
       endDate: endDay.toISOString().split('T')[0],
+      returnYn: 'N',
+      returnDate: '',
     });
     if (res) {
       return { success: true };
@@ -238,6 +245,20 @@ export const createMessageToAdminItem = async ({ message, user }: CreateMessageT
       return { success: true };
     }
     return { success: false }
+  } catch (error) {
+    return { success: false, code: 'ERROR', data: error };
+  }
+}
+
+export const updateReturnBook = async ({ id }: { id: string }): Promise<ApiType> => {
+  try {
+    const today = new Date();
+
+    await updateDoc(doc(db, COLLECTION_KEY.DUE_MASTER, id), {
+      returnYn: 'Y',
+      returnDate: today.toISOString().split('T')[0]
+    });
+    return { success: true };
   } catch (error) {
     return { success: false, code: 'ERROR', data: error };
   }
