@@ -78,7 +78,10 @@ export const getDueListUser = async (user: User) => {
       returnArr.push(({
         ...d,
         id: item.id,
-        dday: _getDday(d.endDate)
+        dday: _getDday(d.endDate.toDate()),
+        createDate: _formatTimestampToDate(d.createDate.toDate()),
+        endDate: _formatTimestampToDate(d.endDate.toDate()),
+        returnDate: d.returnDate ? _formatTimestampToDate(d.returnDate.toDate()) : null,
       }));
     }
     return { success: true, data: returnArr };
@@ -89,15 +92,11 @@ export const getDueListUser = async (user: User) => {
 
 export const getDueListAllUsers = async (user: User) => {
   try {
-    // 1. 오늘 날짜 이후 데이터 조회
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayStr = today.toISOString().slice(0, 10); // ex. 2025-08-13
-
     const dueQuery = query(
       collection(db, COLLECTION_KEY.DUE_MASTER),
       where("companyRef", "==", doc(db, user.companyRefStr)),
-      where("endDate", "<", todayStr),
+      where("returnYn", "==", "N"),
+      where("endDate", "<", new Date()),
     );
     const dueSnapshot = await getDocs(dueQuery);
     if (dueSnapshot.empty) {
@@ -111,7 +110,9 @@ export const getDueListAllUsers = async (user: User) => {
       returnArr.push(({
         ...d,
         username: memberSnap.exists() ? memberSnap.data().username : '',
-        dday: _getDday(d.endDate)
+        dday: _getDday(d.endDate.toDate()),
+        createDate: _formatTimestampToDate(d.createDate.toDate()),
+        endDate: _formatTimestampToDate(d.endDate.toDate()),
       }));
     }
     return { success: true, data: returnArr };
@@ -147,10 +148,9 @@ export const createBorrowBook = async ({ title, itemId, user }: CreateBorrowBook
       itemId: itemId,
       memberRef: doc(db, user.memberRefStr),
       companyRef: doc(db, user.companyRefStr),
-      createDate: today.toISOString().split('T')[0],
-      endDate: endDay.toISOString().split('T')[0],
+      createDate: today,
+      endDate: endDay,
       returnYn: 'N',
-      returnDate: '',
     });
     if (res) {
       return { success: true };
@@ -217,6 +217,7 @@ export const getMessageToAdminList = async (user: User): Promise<ApiType> => {
       returnArr.push(({
         ...d,
         username: memberSnap.exists() ? memberSnap.data().username : '',
+        createDate: _formatTimestampToDate(d.createDate.toDate()),
       }));
     }
     return { success: true, data: returnArr };
@@ -239,7 +240,7 @@ export const createMessageToAdminItem = async ({ message, user }: CreateMessageT
       message: message,
       memberRef: doc(db, user.memberRefStr),
       companyRef: doc(db, user.companyRefStr),
-      createDate: today.toISOString().split('T')[0],
+      createDate: today,
     });
     if (res) {
       return { success: true };
@@ -252,11 +253,9 @@ export const createMessageToAdminItem = async ({ message, user }: CreateMessageT
 
 export const updateReturnBook = async ({ id }: { id: string }): Promise<ApiType> => {
   try {
-    const today = new Date();
-
     await updateDoc(doc(db, COLLECTION_KEY.DUE_MASTER, id), {
       returnYn: 'Y',
-      returnDate: today.toISOString().split('T')[0]
+      returnDate: new Date()
     });
     return { success: true };
   } catch (error) {
@@ -264,18 +263,24 @@ export const updateReturnBook = async ({ id }: { id: string }): Promise<ApiType>
   }
 }
 
-function _getDday(targetDateStr: string): string {
+function _getDday(targetDate: Date): string {
   const today = new Date();
-  const [year, month, day] = targetDateStr.split('-').map(Number);
-  const target = new Date(year, month - 1, day); // 로컬 타임 기준
-
   today.setHours(0, 0, 0, 0);
-  target.setHours(0, 0, 0, 0);
 
-  const diffTime = target.getTime() - today.getTime();
+  targetDate.setHours(0, 0, 0, 0);
+
+  const diffTime = targetDate.getTime() - today.getTime();
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
   if (diffDays > 0) return `-${diffDays}`;
   if (diffDays === 0) return '0';
   return `+${Math.abs(diffDays)}`;
+}
+
+function _formatTimestampToDate(targetDate: Date): string {
+  const year = targetDate.getFullYear();
+  const month = String(targetDate.getMonth() + 1).padStart(2, '0');
+  const day = String(targetDate.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
 }

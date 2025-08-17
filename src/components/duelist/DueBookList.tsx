@@ -71,7 +71,7 @@ function DueBookList(_props: Props) {
   }
 
   const handleReturnButton = (data: any) => {
-    if (data.returnYn === 'Y') return <Button className={styles.returnButton} size='small' label="반납하기" disabled />;
+    if (data.returnYn === 'Y') return <Button className={styles.returnButton} size='small' label="반납 완료" disabled />;
 
     return <Button className={styles.returnButton} size='small' label="반납하기" onClick={() => {
       confirmDialog({
