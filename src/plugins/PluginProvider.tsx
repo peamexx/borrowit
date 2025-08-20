@@ -1,5 +1,5 @@
 import { getUniqueKey } from "@utils/utils";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 
 export interface PluginType {
   name: string;
@@ -66,7 +66,7 @@ export function PluginManagerProvider({ children }: any) {
     console.debug('activePlugin: ', activePlugin);
   }, [activePlugin, pendingOpen]);
 
-  const openPlugins = async (propsPlugins: OpenPluginsType['propsPlugins'], eventName: OpenPluginsType['eventName'], configs: OpenPluginsType['configs']) => {
+  const openPlugins = useCallback(async (propsPlugins: OpenPluginsType['propsPlugins'], eventName: OpenPluginsType['eventName'], configs: OpenPluginsType['configs']) => {
     if (!propsPlugins || propsPlugins.length === 0) return;
 
     await Promise.all(configs.map(async (conf) => {
@@ -79,19 +79,15 @@ export function PluginManagerProvider({ children }: any) {
         });
       }
     }));
-  }
+  }, [])
 
-  const closePlugin = (id: activePluginType['id']) => {
-    const _p = activePlugin.filter((actPlug) => actPlug.id !== id);
-    setActivePlugin(_p);
-  };
+  const closePlugin = useCallback((id: activePluginType['id']) => {
+    setActivePlugin((prev) => prev.filter((actPlug) => actPlug.id !== id));
+  }, []);
 
-  const closePluginsByName = (name: PluginType['name']) => {
-    if (activePlugin.length === 0) return;
-
-    const _p = activePlugin.filter((actPlug) => actPlug.plugin.name !== name);
-    setActivePlugin(_p);
-  };
+  const closePluginsByName = useCallback((name: PluginType['name']) => {
+    setActivePlugin((prev) => prev.filter((actPlug) => actPlug.plugin.name !== name));
+  }, []);
 
   const _openPlugin = async (props: OpenPropsType) => {
     return new Promise((res) => {
