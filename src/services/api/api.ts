@@ -1,4 +1,4 @@
-import { doc, collection, query, where, getDocs, getDoc, addDoc, updateDoc } from 'firebase/firestore';
+import { doc, collection, query, where, getDocs, getDoc, addDoc, updateDoc, orderBy, deleteDoc, setDoc } from 'firebase/firestore';
 
 import { db } from '@services/firebase/firebase';
 import type { User } from '@services/auth/userStore';
@@ -11,6 +11,9 @@ export const API_KEY = {
   GET_MESSAGE_TO_ADMIN_LIST: 'GET_MESSAGE_TO_ADMIN_LIST',
   CREATE_MESSAGE_TO_ADMIN_LIST: 'CREATE_MESSAGE_TO_ADMIN_LIST',
   UPDATE_RETURN_BOOK: 'UPDATE_RETURN_BOOK',
+  CREATE_GAME_DATA: 'CREATE_GAME_DATA',
+  GET_GAME_RESULT_LIST: 'GET_GAME_RESULT_LIST',
+  CREATE_GAME_RESULT_DATA: 'CREATE_GAME_RESULT_DATA',
 }
 
 export const COLLECTION_KEY = {
@@ -18,6 +21,8 @@ export const COLLECTION_KEY = {
   MEMBER_MASTER: 'member_master',
   DUE_MASTER: 'due_master',
   BEGGING_MASTER: 'begging_master',
+  GAME_MASTER: 'game_master',
+  GAME_RESULT_MASTER: 'game_result_master',
 }
 
 export interface ApiType {
@@ -54,6 +59,15 @@ export const getApi = async (key: string, options: any = {}, timeout = 3000) => 
       break;
     case 'UPDATE_RETURN_BOOK':
       fetchPromise = updateReturnBook({ ...options });
+      break;
+    case 'CREATE_GAME_DATA':
+      fetchPromise = createGameData({ ...options });
+      break;
+    case 'GET_GAME_RESULT_LIST':
+      fetchPromise = getGameResultList({ ...options });
+      break;
+    case 'CREATE_GAME_RESULT_DATA':
+      fetchPromise = createGameResultData({ ...options });
       break;
   }
 
@@ -263,6 +277,106 @@ export const updateReturnBook = async ({ id }: { id: string }): Promise<ApiType>
   }
 }
 
+interface CreateGameDataType {
+  itemId: number;
+  answer: any;
+}
+export const createGameData = async (props: CreateGameDataType): Promise<ApiType> => {
+  try {
+    const today = new Date();
+
+    const gameQuery = query(
+      collection(db, COLLECTION_KEY.GAME_MASTER),
+      where("itemId", "==", props.itemId),
+    );
+    // const gameQuery = query(
+    //   collection(db, COLLECTION_KEY.GAME_MASTER),
+    //   where("itemId", "==", props.itemId),
+    // );
+    const gameSnapshot = await getDoc(doc(db, COLLECTION_KEY.GAME_MASTER, props.itemId.toString()));
+    if (gameSnapshot.exists()) {
+      await deleteDoc(doc(db, COLLECTION_KEY.GAME_MASTER, props.itemId.toString()));
+    }
+
+    await setDoc(doc(db, COLLECTION_KEY.GAME_MASTER, props.itemId.toString()), {
+      ...props,
+      createDate: today,
+    });
+    // const res = await addDoc(collection(db, COLLECTION_KEY.GAME_MASTER), {
+    //   ...props,
+    //   createDate: today,
+    // });
+    return { success: true };
+    // return { success: false }
+  } catch (error) {
+    return { success: false, code: 'ERROR', data: error };
+  }
+}
+
+interface GetGameResultListType {
+  itemId: number;
+  user: User;
+}
+export const getGameResultList = async ({ itemId, user }: GetGameResultListType): Promise<ApiType> => {
+  try {
+    const gameListQuery = query(
+      collection(db, COLLECTION_KEY.GAME_RESULT_MASTER),
+      where("memberRef", "==", doc(db, user.memberRefStr)),
+      where("itemId", "==", itemId),
+      orderBy("createDate", "desc")
+    );
+    const gameListSnapshot = await getDocs(gameListQuery);
+    if (gameListSnapshot.empty) {
+      return { success: true, code: 'EMPTY', data: [], message: `해당 user의 데이터가 없음.` };
+    }
+
+    let returnArr = [];
+    for (const item of gameListSnapshot.docs) {
+      const _d = { ...item.data() };
+      if (_d.type === 'ox' || _d.type === 'short' || _d.type === 'multi') {
+        const gameSnap = await getDoc(doc(db, COLLECTION_KEY.GAME_MASTER, itemId.toString()));
+        if (!gameSnap.exists()) break;
+
+        const answer = gameSnap.data().answer?.filter((an: any) => an.idx === _d.idx);
+        if (answer.length !== 0) {
+          _d.answer = answer[0].results;
+        }
+      }
+      returnArr.push(({
+        ..._d,
+        createDate: _formatTimestampToDateTime(_d.createDate.toDate()),
+      }));
+    }
+    return { success: true, data: returnArr };
+  } catch (error) {
+    return { success: false, code: 'ERROR', data: error };
+  }
+}
+interface CreateGameResultDataType {
+  [key: string]: any;
+  user: User;
+}
+export const createGameResultData = async (props: CreateGameResultDataType): Promise<ApiType> => {
+  try {
+    const today = new Date();
+    const { user, ...rect } = props;
+
+    const res = await addDoc(collection(db, COLLECTION_KEY.GAME_RESULT_MASTER), {
+      ...rect,
+      memberRef: doc(db, user.memberRefStr),
+      companyRef: doc(db, user.companyRefStr),
+      createDate: today,
+    });
+    if (res) {
+      return { success: true };
+    }
+    return { success: false }
+  } catch (error) {
+    return { success: false, code: 'ERROR', data: error };
+  }
+}
+
+// util
 function _getDday(targetDate: Date): string {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -283,4 +397,15 @@ function _formatTimestampToDate(targetDate: Date): string {
   const day = String(targetDate.getDate()).padStart(2, '0');
 
   return `${year}-${month}-${day}`;
+}
+
+function _formatTimestampToDateTime(targetDate: Date): string {
+  const year = targetDate.getFullYear();
+  const month = String(targetDate.getMonth() + 1).padStart(2, '0');
+  const day = String(targetDate.getDate()).padStart(2, '0');
+  const hours = String(targetDate.getHours()).padStart(2, '0');
+  const minutes = String(targetDate.getMinutes()).padStart(2, '0');
+  const seconds = String(targetDate.getSeconds()).padStart(2, '0');
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }

@@ -1,8 +1,10 @@
 import styles from './dueList.module.css';
 import { Message } from 'primereact/message';
+import { Divider } from 'primereact/divider';
 
 import DueBookList from '@components/duelist/DueBookList';
 import SendMessageButton from '@components/button/SendMessageButton';
+import GameList from '@components/gamelist/GameList';
 
 function DueList() {
   return (
@@ -12,6 +14,9 @@ function DueList() {
       <span className={styles.mb10}></span>
       <DueBookList />
       <SendMessageButton />
+      <Divider className="mt50 mb50" />
+      <h2>도서 퀴즈 풀기</h2>
+      <GameList />
     </div>
   )
 }
