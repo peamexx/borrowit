@@ -1,150 +1,168 @@
 import gameData from './data.js';
+import BorrowitMessage from './sdk.js';
 
 const GAME_DATA = gameData;
 const UI = createUiModule();
 
-window.onload = function () {
-  let currentQuizIndex = 0;
+window.addEventListener('load', async function () {
+  try {
+    const SDK = await BorrowitMessage.load({
+      parentWindow: window.parent.opener,
+      answer: [
+        { idx: 0, results: GAME_DATA[0].isCorrect ? 'o' : 'x' },
+        { idx: 1, results: GAME_DATA[1].isCorrect ? 'o' : 'x' },
+        { idx: 2, results: GAME_DATA[2].isCorrect ? 'o' : 'x' },
+      ]
+    });
+    let currentQuizIndex = 0;
 
-  // start
-  init();
+    // start
+    init();
 
-  // main functions
-  function init() {
-    UI.startBtn.el.addEventListener('click', gameStart, { once: true });
-    UI.resetBtn.el.addEventListener('click', reset, { once: true });
-    UI.closeBtn.el.addEventListener('click', () => window.parent.close());
-  }
-
-  function gameStart() {
-    console.debug('gameStart: 게임 시작');
-    UI.startBtn.fadeOut();
-
-    UI.startBtn.el.addEventListener('animationend', () => {
-      setupQuizRound();
-
-      UI.quizBox.fadeIn();
-    }, { once: true });
-  }
-
-  function setupQuizRound() {
-    UI.quizText.el.innerHTML = getCurrentQuizHtml();
-
-    if (currentQuizIndex === 0) {
-      UI.oxBtn.onOclick((e) => handleAnswerSubmit.call(e, true));
-      UI.oxBtn.onXclick((e) => handleAnswerSubmit.call(e, false));
+    // main functions
+    function init() {
+      UI.startBtn.el.addEventListener('click', gameStart, { once: true });
+      UI.resetBtn.el.addEventListener('click', reset, { once: true });
+      UI.closeBtn.el.addEventListener('click', () => window.parent.close());
     }
 
-    UI.oxBtn.disable(false);
-  }
+    function gameStart() {
+      SDK.gameStart();
 
-  function handleAnswerSubmit(userAnswer) {
-    UI.oxBtn.disable(true);
+      console.debug('gameStart: 게임 시작');
+      UI.startBtn.fadeOut();
 
-    const isCorrect = isAnswerCorrect(userAnswer);
+      UI.startBtn.el.addEventListener('animationend', () => {
+        setupQuizRound();
 
-    UI.snapshotBg.fadeIn(isCorrect);
-
-    UI.quizBox.fadeOut();
-    UI.quizBox.el.addEventListener('animationend', () => {
-      setupQuizAnswer();
-
-      UI.answerBox.fadeIn();
-    }, { once: true });
-  }
-
-  function setupQuizAnswer() {
-    UI.answerText.el.innerHTML = getCurrentAnswerHtml();
-
-    if (currentQuizIndex === 0) {
-      UI.nextBtn.onclick(handleNextSubmit);
+        UI.quizBox.fadeIn();
+      }, { once: true });
     }
 
-    UI.nextBtn.disable(false);
-  }
+    function setupQuizRound() {
+      UI.quizText.el.innerHTML = getCurrentQuizHtml();
 
-  async function handleNextSubmit() {
-    UI.nextBtn.disable(true);
-
-    const enableProcced = await setNextQuizIndex();
-    if (!enableProcced.success) return;
-
-    UI.snapshotBg.fadeOut();
-
-    UI.answerBox.fadeOut();
-    UI.answerBox.el.addEventListener('animationend', () => {
-      setupQuizRound();
-
-      UI.quizBox.fadeIn();
-    }, { once: true });
-  }
-
-  function endGame() {
-    UI.answerBox.fadeOut();
-    UI.snapshotBg.fadeOut();
-
-    setTimeout(() => {
-      UI.endBox.fadeIn();
-    }, 1000);
-  }
-
-  function reset() {
-    console.debug('reset: 게임 리셋');
-    document.body.style.pointerEvents = 'none';
-
-    // 변수 리셋
-    currentQuizIndex = 0;
-
-    // 이벤트 리셋
-    UI.oxBtn.offOclick();
-    UI.oxBtn.offXclick();
-    UI.nextBtn.offclick();
-
-    // animation 리셋
-    UI.endBox.fadeOut();
-    UI.snapshotBg.fadeOut();
-    UI.answerBox.fadeOut();
-    UI.quizBox.fadeOut();
-
-    // disable 리셋
-    UI.nextBtn.disable(false);
-    UI.oxBtn.disable(false);
-
-    setTimeout(() => {
-      document.body.removeAttribute('style');
-
-      init();
-
-      UI.startBtn.fadeIn();
-    }, 1000);
-  }
-
-  // etc functions
-  function getCurrentQuizHtml() {
-    return GAME_DATA[currentQuizIndex].html;
-  }
-
-  function isAnswerCorrect(userAnswer) {
-    return GAME_DATA[currentQuizIndex].isCorrect === userAnswer ? true : false;
-  }
-
-  function getCurrentAnswerHtml() {
-    return GAME_DATA[currentQuizIndex].answerHtml;
-  }
-
-  function setNextQuizIndex() {
-    return new Promise((res) => {
-      if (currentQuizIndex == GAME_DATA.length - 1) {
-        endGame();
-        res({ success: false, code: 'END' });
+      if (currentQuizIndex === 0) {
+        UI.oxBtn.onOclick((e) => handleAnswerSubmit.call(e, true));
+        UI.oxBtn.onXclick((e) => handleAnswerSubmit.call(e, false));
       }
 
-      currentQuizIndex = currentQuizIndex + 1;
-      console.debug('게임 인덱스 증가: ', currentQuizIndex);
-      res({ success: true });
-    })
+      UI.oxBtn.disable(false);
+    }
+
+    function handleAnswerSubmit(userAnswer) {
+      UI.oxBtn.disable(true);
+
+      const isCorrect = isAnswerCorrect(userAnswer);
+      SDK.submit({ type: SDK.keys.OX, idx: currentQuizIndex, userAnswer: userAnswer ? 'o' : 'x' });
+
+      UI.snapshotBg.fadeIn(isCorrect);
+
+      UI.quizBox.fadeOut();
+      UI.quizBox.el.addEventListener('animationend', () => {
+        setupQuizAnswer();
+
+        UI.answerBox.fadeIn();
+      }, { once: true });
+    }
+
+    function setupQuizAnswer() {
+      UI.answerText.el.innerHTML = getCurrentAnswerHtml();
+
+      if (currentQuizIndex === 0) {
+        UI.nextBtn.onclick(handleNextSubmit);
+      }
+
+      UI.nextBtn.disable(false);
+    }
+
+    async function handleNextSubmit() {
+      UI.nextBtn.disable(true);
+
+      const enableProcced = await setNextQuizIndex();
+      if (!enableProcced.success) return;
+
+      UI.snapshotBg.fadeOut();
+
+      UI.answerBox.fadeOut();
+      UI.answerBox.el.addEventListener('animationend', () => {
+        setupQuizRound();
+
+        UI.quizBox.fadeIn();
+      }, { once: true });
+    }
+
+    function endGame() {
+      SDK.gameEnd();
+
+      UI.answerBox.fadeOut();
+      UI.snapshotBg.fadeOut();
+
+      setTimeout(() => {
+        UI.endBox.fadeIn();
+      }, 1000);
+    }
+
+    function reset() {
+      console.debug('reset: 게임 리셋');
+      document.body.style.pointerEvents = 'none';
+
+      // 변수 리셋
+      currentQuizIndex = 0;
+
+      // 이벤트 리셋
+      UI.oxBtn.offOclick();
+      UI.oxBtn.offXclick();
+      UI.nextBtn.offclick();
+
+      // animation 리셋
+      UI.endBox.fadeOut();
+      UI.snapshotBg.fadeOut();
+      UI.answerBox.fadeOut();
+      UI.quizBox.fadeOut();
+
+      // disable 리셋
+      UI.nextBtn.disable(false);
+      UI.oxBtn.disable(false);
+
+      setTimeout(() => {
+        document.body.removeAttribute('style');
+
+        init();
+
+        UI.startBtn.fadeIn();
+      }, 1000);
+    }
+
+    // etc functions
+    function getCurrentQuizHtml() {
+      return GAME_DATA[currentQuizIndex].html;
+    }
+
+    function isAnswerCorrect(userAnswer) {
+      return GAME_DATA[currentQuizIndex].isCorrect === userAnswer ? true : false;
+    }
+
+    function getCurrentAnswerHtml() {
+      return GAME_DATA[currentQuizIndex].answerHtml;
+    }
+
+    function setNextQuizIndex() {
+      return new Promise((res) => {
+        if (currentQuizIndex == GAME_DATA.length - 1) {
+          endGame();
+          res({ success: false, code: 'END' });
+        }
+
+        currentQuizIndex = currentQuizIndex + 1;
+        console.debug('게임 인덱스 증가: ', currentQuizIndex);
+        res({ success: true });
+      })
+    }
+  } catch (error) {
+    console.debug(error);
   }
-}
+})
 
 function createUiModule() {
   const resetBtnEl = document.querySelector('#reset-btn');

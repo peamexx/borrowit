@@ -44,8 +44,10 @@
     <iframe src="./src/index.html"></iframe>
   </div>
   <script>
+    const iframe = document.querySelector('iframe');
+
+    // 화면 크기 조절
     function resizeIframe() {
-      const iframe = document.querySelector('iframe');
       const wrap = document.querySelector('#wrap');
 
       const wrapWidth = wrap.clientWidth;
@@ -66,9 +68,13 @@
 
       iframe.style.transform = `translate(${left}px, ${top}px) scale(${scale})`;
     }
-
     window.addEventListener('resize', resizeIframe);
     window.addEventListener('load', resizeIframe);
+
+    // index.html로 메세지 전달
+    window.addEventListener('message', (e) => {
+      iframe.contentWindow.postMessage(event.data, event.origin);
+    })
   </script>
 </body>
 
